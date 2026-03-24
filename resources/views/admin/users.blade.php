@@ -78,6 +78,7 @@
                 <div class="col-md-2">
                     <label class="form-label">Rol</label>
                     <select name="role" class="form-select">
+                        <option value="Operario">Operario</option>
                         <option value="Usuario">Usuario</option>
                         <option value="Administrador">Administrador</option>
                         @if(auth()->user()->role === 'Root')
@@ -124,6 +125,7 @@
                                 @method('PATCH')
                                 <div class="input-group input-group-sm">
                                     <select name="role" class="form-select form-select-sm">
+                                        <option value="operario" {{ $user->role ?? '' == 'operario' ? 'selected' : '' }}>Operario</option>
                                         <option value="Usuario" {{ $user->role === 'Usuario' ? 'selected' : '' }}>Usuario</option>
                                         <option value="Administrador" {{ $user->role === 'Administrador' ? 'selected' : '' }}>Administrador</option>
                                         <option value="Root" {{ $user->role === 'Root' ? 'selected' : '' }}>Root</option>
@@ -153,8 +155,7 @@
                             </button>
                         </form>
                     </td>
-                    <td class="small">{{ $user->fecha_registro?->format('d/m/Y') ?? '—' }}</td>
-                    <td>
+                    <td class="small">{{ $user->fecha_registro ? date('d/m/Y', strtotime($user->fecha_registro)) : '—' }}</td>                    <td>
                         @if(auth()->user()->role === 'Root' && $user->id !== auth()->id())
                             <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
                                 onsubmit="return confirm('¿Eliminar este usuario?')">

@@ -7,12 +7,16 @@
         <div class="small">
             {{ $cisternas->withQueryString()->links('pagination::bootstrap-4') }}
         </div>
-        <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-success btn-sm">
-            <i class="bi bi-file-earmark-excel"></i> Importar Excel
-        </a>
-        <a href="{{ route('cisterna.create') }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus-lg"></i> Nueva Cisterna
-        </a>
+        @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
+            <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-success btn-sm">
+                <i class="bi bi-file-earmark-excel"></i> Importar Excel
+            </a>
+        @endif
+        @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
+            <a href="{{ route('cisterna.create') }}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> Nueva Cisterna
+            </a>
+        @endif
         <a href="{{ route('cisterna.export', request()->query()) }}" class="btn btn-outline-primary btn-sm">
             <i class="bi bi-download"></i> Exportar Excel
         </a>
@@ -22,8 +26,15 @@
         <a href="{{ route('planificacion.index') }}" class="btn btn-outline-info btn-sm">
             <i class="bi bi-calendar2-week"></i> Planificación
         </a>
+        {{-- Botón de gestión de usuarios - Solo para Root y Administrador --}}
+        @if(auth()->user()->isRoot() || auth()->user()->isAdmin())
+            <a href="{{ route('admin.users') }}" class="btn btn-outline-dark btn-sm">
+                <i class="bi bi-people"></i> Usuarios
+            </a>
+        @endif
     </div>
 </div>
+
 
 {{-- Filtros --}}
 <form method="GET" action="{{ route('cisterna.index') }}" class="row g-2 mb-3">
@@ -50,7 +61,7 @@
 <div>
     <table class="table table-bordered table-hover align-middle" style="font-size: 0.82rem; white-space: nowrap;">
         <thead>
-            <tr>
+            32
                 <th>OF</th>
                 <th>Nº</th>
                 <th>Origen</th>
@@ -133,7 +144,7 @@
                         @endif
                     </td>
                     <td>
-                        {{-- Botón modal consumo --}}
+                        {{-- Botón modal consumo (todos los roles pueden registrar consumo) --}}
                         <button class="btn btn-sm btn-outline-warning"
                                 title="Registrar consumo"
                                 onclick="abrirModal(
@@ -150,20 +161,26 @@
                             class="btn btn-sm btn-outline-secondary" title="Ver">
                             <i class="bi bi-eye"></i>
                         </a>
-                        <a href="{{ route('cisterna.edit', $cisterna->IdCisterna) }}"
-                            class="btn btn-sm btn-outline-primary" title="Editar">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <form method="POST"
-                                action="{{ route('cisterna.destroy', $cisterna->IdCisterna) }}"
-                                style="display:inline"
-                                onsubmit="return confirm('¿Eliminar esta cisterna?')">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
+                        {{-- Editar: solo visible para admin/root/user --}}
+                        @if(!auth()->user()->isOperario())
+                            <a href="{{ route('cisterna.edit', $cisterna->IdCisterna) }}"
+                                class="btn btn-sm btn-outline-primary" title="Editar">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        @endif
+                        {{-- Eliminar: solo visible para root/admin --}}
+                        @if(auth()->user()->isRoot() || auth()->user()->isAdmin())
+                            <form method="POST"
+                                    action="{{ route('cisterna.destroy', $cisterna->IdCisterna) }}"
+                                    style="display:inline"
+                                    onsubmit="return confirm('¿Eliminar esta cisterna?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        @endif
                     </td>
                 </tr>
             @empty

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -27,22 +28,47 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'fecha_registro' => 'datetime',
-            'is_active' => 'boolean',
             'password' => 'hashed',
+            'fecha_registro' => 'datetime',
         ];
     }
 
-    //Equivalente a User.IsInRole("Root")
-    public function hasRole(string $role): bool
-    {
-        return $this->role === $role;
-    }
-
-    //Equivalente a [Authorize(Roles = "Root,Administrador")]
+    // Métodos de verificación de roles
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['Root', 'Administrador']);
+        return $this->role === 'admin' || $this->role === 'Administrador';
     }
 
+    public function isRoot(): bool
+    {
+        return $this->role === 'Root';
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === 'user' || $this->role === 'Usuario';
+    }
+
+    public function isOperario(): bool
+    {
+        return $this->role === 'operario' || $this->role === 'Operario';
+    }
+
+    // Permisos de visualización
+    public function canView(): bool
+    {
+        return $this->isUser() || $this->isOperario() || $this->isAdmin() || $this->isRoot();
+    }
+
+    // Permisos de creación
+    public function canCreate(): bool
+    {
+        return $this->isAdmin() || $this->isRoot() || $this->isUser();
+    }
+
+    // Permisos de eliminación
+    public function canDelete(): bool
+    {
+        return $this->isAdmin() || $this->isRoot();
+    }
 }
