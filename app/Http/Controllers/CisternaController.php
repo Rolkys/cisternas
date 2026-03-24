@@ -275,46 +275,68 @@ class CisternaController extends Controller
     // ==================== DASHBOARD ====================
     public function dashboard(Request $request)
     {
-        $desde = $request->filled('desde') ? $request->desde:null;
-        $hasta = $request->filled('hasta') ? $request->hasta:null;
+        $desde = $request->filled('desde') ? $request->desde : null;
+        $hasta = $request->filled('hasta') ? $request->hasta : null;
 
+        // 1. Iniciamos la consulta base que usaremos para las métricas principales
         $query = Cisterna::query();
 
-        if($desde) $query->whereDate('FechaConsumoMG', '>=', '$desde')
-                        ->orWhereDate('FechaEntradaMG', '>=', '$desde');
-        if($hasta) $query->whereDate('FechaConsumoMG', '<=', '$hasta')
-                        ->orWhereDate('FechaEntradaMG', '<=', '$hasta');
+        // 2. Aplicamos los filtros de fecha correctamente agrupados (en un sub-where)
+        if ($desde || $hasta) {
+            $query->where(function ($q) use ($desde, $hasta) {
+                if ($desde) {
+                    $q->where(function ($sub) use ($desde) {
+                        $sub->whereDate('FechaConsumoMG', '>=', $desde)
+                            ->orWhereDate('FechaEntradaMG', '>=', $desde);
+                    });
+                }
+                if ($hasta) {
+                    $q->where(function ($sub) use ($hasta) {
+                        $sub->whereDate('FechaConsumoMG', '<=', $hasta)
+                            ->orWhereDate('FechaEntradaMG', '<=', $hasta);
+                    });
+                }
+            });
+        }
 
-        //Métricas - respetan el rango si se filtra, sino cuentan todo
-        $baseQuery = fn() => $desde || $hasta
-            ? Cisrtena::whereBetween('FechaConsumoMG', [$desde ?? '2000-01-01', $hasta ?? now()->toDateString()])
-            : Cisterna::query();
-
-        $total          = ($baseQuery)()->count();
-        $consumidas     = ($baseQuery)()->whereNotNull('HoraRealConsumoL1')->count();
-        $hoy_count      = Cisterna::whereDate('FechaConsumoMG', today())->count();
-        $incidencias    = ($baseQuery)()->whereNotNull('Incidencias')->where('Indicencias', '!=', '')->count();
-        $pendientes     = ($baseQuery)()->whereNull('HoraRealConsumoL1')
+        // 3. Ejecutamos los conteos sobre esa query ya filtrada
+        $total          = (clone $query)->count();
+        $consumidas     = (clone $query)->whereNotNull('HoraRealConsumoL1')->count();
+        $pendientes     = (clone $query)->whereNull('HoraRealConsumoL1')
                                         ->whereNull('Incidencias')
                                         ->count();
+        
+        // Para incidencias, SQLite a veces se marea con las comillas vacías y los nulos
+        $incidencias    = (clone $query)->whereNotNull('Incidencias')
+                                        ->where('Incidencias', '!=', '')
+                                        ->count();
+
+        // 4. Métricas globales que NO dependen del filtro de arriba (siempre del día de hoy)
+        $hoy_count      = Cisterna::whereDate('FechaConsumoMG', today())->count();
+        
         $en_transito    = Cisterna::whereNull('FechaEntradaMG')
                                     ->whereNull('HoraRealConsumoL1')
                                     ->count();
-        $recientes      = Cisterna::orderByDesc('IdCisterna')->take(5)->get();
-        $hoy_cisternas  = Cisterna::whereDate('FechaConsumoMG', today())
-                                    ->orderBy('HoraEstimaadConsumoL1')
-                                    ->get();
-        $años           = Cisterna::selectRaw('strftime("%Y", COALESCE(FechaConsumoMG, creaed_at))as año')
-                                    ->groupBy('año')
-                                    ->orderByDesc('año')
-                                    ->pluck('año');
-        $añoSeleccionado = $request->año;
-        $cisternaDelAño = collect();
 
-        if($añoSeleccionado){
-            $cisternasDelAño = Cisterna::where(function($q) use ($añoSeleccionado) {
+        $recientes      = Cisterna::orderByDesc('IdCisterna')->take(5)->get();
+
+        $hoy_cisternas  = Cisterna::whereDate('FechaConsumoMG', today())
+                                    ->orderBy('HoraEstimaadConsumoL1') // Revisa si no es 'HoraEstimadaConsumoL1'
+                                    ->get();
+
+        // 5. Listado de años para el selector (Optimizado para SQLite)
+        $años = Cisterna::selectRaw('strftime("%Y", COALESCE(FechaConsumoMG, created_at)) as ano')
+                        ->groupBy('ano')
+                        ->orderByDesc('ano')
+                        ->pluck('ano');
+
+        $añoSeleccionado = $request->año;
+        $cisternasDelAño = collect();
+
+        if ($añoSeleccionado) {
+            $cisternasDelAño = Cisterna::where(function ($q) use ($añoSeleccionado) {
             $q->whereYear('FechaConsumoMG', $añoSeleccionado)
-                ->orWhere(function($q2) use ($añoSeleccionado) {
+                ->orWhere(function ($q2) use ($añoSeleccionado) {
                     $q2->whereNull('FechaConsumoMG')
                         ->whereYear('created_at', $añoSeleccionado);
                 });
@@ -324,9 +346,9 @@ class CisternaController extends Controller
         }
 
         return view('cisterna.dashboard', compact(
-            'total', 'consumidas', 'hoy_count', 'indicencias',
+            'total', 'consumidas', 'hoy_count', 'incidencias',
             'pendientes', 'en_transito', 'recientes', 'hoy_cisternas',
-            'años', 'añoSeleccionado', 'cisternaDelAño',
+            'años', 'añoSeleccionado', 'cisternasDelAño',
             'desde', 'hasta'
         ));
     }
