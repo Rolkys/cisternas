@@ -7,6 +7,34 @@
         <i class="bi bi-list-ul"></i> Ver listado
     </a>
 </div>
+{{-- Filtro por rango de fechas --}}
+<form method="GET" action="{{ route('dashboard') }}" class="row g-2 mb-4 align-items-end">
+    <div class="col-auto">
+        <label class="form-label small mb-1">Desde</label>
+        <input type="date" name="desde" class="form-control-sm"
+                value="{{ $desde }}">
+    </div>
+    <div class="col-auto">
+        <label class="form-label small mb-1">Desde</label>
+        <input type="date" name="hasta" class="form-control-sm"
+                value="{{ $hasta }}">
+    </div>
+    <div class="col-auto d-flex gap-2">
+        <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-funnel"></i> Filtrar
+        </button>
+        <a href="{{ route('dashboard') }}" class="btn-outline-secondary btn-sm">
+            <i class="bi bi-x-lg"></i> Limpiar
+        </a>
+    </div>
+    @if($desde||$hasta)
+        <div class="col-auto">
+            <span class="badge bg-info">
+                Filtrado: {{ $desde ?? '-' }} → {{ $hasta ?? '-' }}
+            </span>
+        </div>
+    @endif
+</form>
 
 {{-- Tarjetas de métricas --}}
 <div class="row g-3 mb-4">

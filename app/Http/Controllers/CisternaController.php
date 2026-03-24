@@ -275,45 +275,59 @@ class CisternaController extends Controller
     // ==================== DASHBOARD ====================
     public function dashboard(Request $request)
     {
-        $hoy = now()->startOfDay();
+        $desde = $request->filled('desde') ? $request->desde:null;
+        $hasta = $request->filled('hasta') ? $request->hasta:null;
 
-        $total          = Cisterna::count();
-        $consumidas     = Cisterna::whereNotNull('HoraRealConsumoL1')->count();
-        $hoy_count      = Cisterna::whereDate('FechaEntradaMG', today())->count();
-        $incidencias    = Cisterna::whereNotNull('Incidencias')->where('Incidencias', '!=', '')->count();
-        $pendientes     = Cisterna::whereNull('HoraRealConsumoL1')
-                                    ->whereNull('Incidencias')
-                                    ->whereDate('FechaEntradaMG', '>', today())
-                                    ->count();
+        $query = Cisterna::query();
+
+        if($desde) $query->whereDate('FechaConsumoMG', '>=', '$desde')
+                        ->orWhereDate('FechaEntradaMG', '>=', '$desde');
+        if($hasta) $query->whereDate('FechaConsumoMG', '<=', '$hasta')
+                        ->orWhereDate('FechaEntradaMG', '<=', '$hasta');
+
+        //Métricas - respetan el rango si se filtra, sino cuentan todo
+        $baseQuery = fn() => $desde || $hasta
+            ? Cisrtena::whereBetween('FechaConsumoMG', [$desde ?? '2000-01-01', $hasta ?? now()->toDateString()])
+            : Cisterna::query();
+
+        $total          = ($baseQuery)()->count();
+        $consumidas     = ($baseQuery)()->whereNotNull('HoraRealConsumoL1')->count();
+        $hoy_count      = Cisterna::whereDate('FechaConsumoMG', today())->count();
+        $incidencias    = ($baseQuery)()->whereNotNull('Incidencias')->where('Indicencias', '!=', '')->count();
+        $pendientes     = ($baseQuery)()->whereNull('HoraRealConsumoL1')
+                                        ->whereNull('Incidencias')
+                                        ->count();
         $en_transito    = Cisterna::whereNull('FechaEntradaMG')
                                     ->whereNull('HoraRealConsumoL1')
                                     ->count();
         $recientes      = Cisterna::orderByDesc('IdCisterna')->take(5)->get();
-        $hoy_cisternas  = Cisterna::whereDate('FechaEntradaMG', today())
-                                    ->orderBy('HoraEstimadaConsumoL1')
+        $hoy_cisternas  = Cisterna::whereDate('FechaConsumoMG', today())
+                                    ->orderBy('HoraEstimaadConsumoL1')
                                     ->get();
-
-        //Años disponibles en la BD
-        $años = Cisterna::selectRaw('strftime("%Y",FechaEntradaMG) as año')
-                        ->whereNotNull('FechaEntradaMG')
-                        ->groupBy('año')
-                        ->orderByDesc('año')
-                        ->pluck('año');
-
-        // Si se selecciona un año mostrar sus cisternasç
+        $años           = Cisterna::selectRaw('strftime("%Y", COALESCE(FechaConsumoMG, creaed_at))as año')
+                                    ->groupBy('año')
+                                    ->orderByDesc('año')
+                                    ->pluck('año');
         $añoSeleccionado = $request->año;
-        $cisternasDelAño = collect();
+        $cisternaDelAño = collect();
 
         if($añoSeleccionado){
-            $cisternasDelAño = Cisterna::whereYear('FechaEntradaMG', $añoSeleccionado)
-                                        ->orderByDesc('NumeroCisterna')
-                                        ->get();
+            $cisternasDelAño = Cisterna::where(function($q) use ($añoSeleccionado) {
+            $q->whereYear('FechaConsumoMG', $añoSeleccionado)
+                ->orWhere(function($q2) use ($añoSeleccionado) {
+                    $q2->whereNull('FechaConsumoMG')
+                        ->whereYear('created_at', $añoSeleccionado);
+                });
+            })
+            ->orderByDesc('NumeroCisterna')
+            ->get();
         }
 
         return view('cisterna.dashboard', compact(
-            'total', 'consumidas', 'hoy_count', 'incidencias',
+            'total', 'consumidas', 'hoy_count', 'indicencias',
             'pendientes', 'en_transito', 'recientes', 'hoy_cisternas',
-            'años', 'añoSeleccionado', 'cisternasDelAño'
+            'años', 'añoSeleccionado', 'cisternaDelAño',
+            'desde', 'hasta'
         ));
     }
 }
