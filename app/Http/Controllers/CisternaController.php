@@ -335,7 +335,7 @@ class CisternaController extends Controller
 
         if ($añoSeleccionado) {
             $cisternasDelAño = Cisterna::where(function ($q) use ($añoSeleccionado) {
-            $q->whereYear('FechaConsumoMG', $añoSeleccionado)
+                $q->whereYear('FechaConsumoMG', $añoSeleccionado)
                 ->orWhere(function ($q2) use ($añoSeleccionado) {
                     $q2->whereNull('FechaConsumoMG')
                         ->whereYear('created_at', $añoSeleccionado);
