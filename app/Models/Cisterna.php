@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Cisterna extends Model
+{
+    protected $primaryKey = 'IdCisterna';
+
+    protected $fillable = [
+        'OF',
+        'NumeroCisterna',
+        'Origen',
+        'Destino',
+        'Matricula',
+        'MatriculaCisterna',
+        'Conductor',
+        'Telefono',
+        'Transporte',
+        'FechaFabricacionHuelba',
+        'HoraSalida',
+        'FechaEntradaMG',
+        'HoraLlegadaEstimada',
+        'FechaConsumoMG',
+        'HoraEstimadaConsumoL1',
+        'HoraEstimadaConsumoL2',
+        'HoraRealConsumoL1',
+        'HoraRealConsumoL2',
+        'GlobalGAP',
+        'FDA',
+        'Observaciones',
+        'Incidencias'
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'FechaFabricacionHuelba'    => 'datetime',
+            'HoraSalida'                => 'datetime',
+            'FechaEntradaMG'            => 'datetime',
+            'HoraLlegadaEstimada'       => 'datetime',
+            'FechaConsumoMG'            => 'datetime',
+            'HoraEstimadaConsumoL1'     => 'datetime',
+            'HoraEstimadaConsumoL2'     => 'datetime',
+            'HoraRealConsumoL1'         => 'datetime',
+            'HoraRealConsumoL2'         => 'datetime',
+            'GlobalGAP'                 => 'datetime',
+            'FDA'                       => 'datetime',
+        ];
+    }
+}
