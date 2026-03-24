@@ -78,7 +78,7 @@
                 <div class="col-md-2">
                     <label class="form-label">Rol</label>
                     <select name="role" class="form-select">
-                        <option value="Operario">Operario</option>
+                        <option value="operario">Operario</option>
                         <option value="Usuario">Usuario</option>
                         <option value="Administrador">Administrador</option>
                         @if(auth()->user()->role === 'Root')
@@ -104,15 +104,14 @@
     <div class="card-body p-0">
         <table class="table table-bordered table-hover align-middle mb-0">
             <thead>
-                <tr>
+                32
                     <th>Nombre</th>
                     <th>Email</th>
                     <th>Rol</th>
                     <th>Estado</th>
                     <th>Registro</th>
                     <th>Acciones</th>
-                </tr>
-            </thead>
+                </thead>
             <tbody>
                 @foreach($users as $user)
                 <tr class="{{ !$user->is_active ? 'table-secondary text-muted' : '' }}">
@@ -125,10 +124,10 @@
                                 @method('PATCH')
                                 <div class="input-group input-group-sm">
                                     <select name="role" class="form-select form-select-sm">
-                                        <option value="operario" {{ $user->role ?? '' == 'operario' ? 'selected' : '' }}>Operario</option>
-                                        <option value="Usuario" {{ $user->role === 'Usuario' ? 'selected' : '' }}>Usuario</option>
-                                        <option value="Administrador" {{ $user->role === 'Administrador' ? 'selected' : '' }}>Administrador</option>
-                                        <option value="Root" {{ $user->role === 'Root' ? 'selected' : '' }}>Root</option>
+                                        <option value="operario" {{ $user->role == 'operario' ? 'selected' : '' }}>Operario</option>
+                                        <option value="Usuario" {{ $user->role == 'Usuario' ? 'selected' : '' }}>Usuario</option>
+                                        <option value="Administrador" {{ $user->role == 'Administrador' ? 'selected' : '' }}>Administrador</option>
+                                        <option value="Root" {{ $user->role == 'Root' ? 'selected' : '' }}>Root</option>
                                     </select>
                                     <button class="btn btn-outline-secondary btn-sm" type="submit">
                                         <i class="bi bi-check"></i>
@@ -139,9 +138,10 @@
                             <span class="badge
                                 @if($user->role === 'Root') bg-danger
                                 @elseif($user->role === 'Administrador') bg-warning text-dark
+                                @elseif($user->role === 'operario') bg-info
                                 @else bg-secondary
                                 @endif">
-                                {{ $user->role }}
+                                {{ $user->role === 'operario' ? 'Operario' : $user->role }}
                             </span>
                         @endif
                     </td>
@@ -155,7 +155,8 @@
                             </button>
                         </form>
                     </td>
-                    <td class="small">{{ $user->fecha_registro ? date('d/m/Y', strtotime($user->fecha_registro)) : '—' }}</td>                    <td>
+                    <td class="small">{{ $user->fecha_registro ? date('d/m/Y', strtotime($user->fecha_registro)) : '—' }}</td>
+                    <td>
                         @if(auth()->user()->role === 'Root' && $user->id !== auth()->id())
                             <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
                                 onsubmit="return confirm('¿Eliminar este usuario?')">

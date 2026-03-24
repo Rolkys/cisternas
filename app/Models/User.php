@@ -49,6 +49,7 @@ class User extends Authenticatable
         return $this->role === 'user' || $this->role === 'Usuario';
     }
 
+    // 👇 ESTE ES EL NUEVO MÉTODO 👇
     public function isOperario(): bool
     {
         return $this->role === 'operario' || $this->role === 'Operario';

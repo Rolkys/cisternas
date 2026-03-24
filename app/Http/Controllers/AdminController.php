@@ -4,96 +4,72 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-    // ==================== INDEX ====================
     public function index()
     {
-        $users = User::orderBy('role')->orderBy('email')->get();
+        $users = User::orderBy('role')->orderBy('name')->get();
         return view('admin.users', compact('users'));
     }
 
-    // ==================== STORE ====================
     public function store(Request $request)
     {
         $request->validate([
-            'email'             => 'required|email|unique:users,email',
-            'password_generada' => 'required|string',
-            'role'              => 'required|in:Root,Administrador,Usuario',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'role' => 'required|in:Root,Administrador,Usuario,operario',
+            'password' => 'required|min:6',
         ]);
 
-        if (in_array($request->role, ['Root', 'Administrador']) && auth()->user()->role !== 'Root') {
-            abort(403, 'Solo Root puede crear administradores.');
-        }
-
-        $password = $request->password_generada;
-        $name     = ucfirst(strtolower(explode('@', $request->email)[0]));
-
         User::create([
-            'name'           => $name,
-            'email'          => $request->email,
-            'password'       => Hash::make($password),
-            'role'           => $request->role,
-            'is_active'      => true,
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => $request->role,
+            'is_active' => 1,
             'fecha_registro' => now(),
         ]);
 
-        return redirect()->route('admin.users')
-                         ->with('success', "✅ Usuario creado. Contraseña: {$password}");
+        return redirect()->route('admin.users')->with('success', 'Usuario creado correctamente');
     }
 
-    // ==================== TOGGLE ACTIVO ====================
-    public function toggle(User $user)
-    {
-        if ($user->id === auth()->id()) {
-            return redirect()->back()->with('error', '❌ No puedes desactivarte a ti mismo.');
-        }
-
-        if (in_array($user->role, ['Root', 'Administrador']) && auth()->user()->role !== 'Root') {
-            abort(403);
-        }
-
-        $user->update(['is_active' => !$user->is_active]);
-
-        $estado = $user->is_active ? 'activado' : 'desactivado';
-        return redirect()->back()->with('success', "✅ Usuario $estado correctamente.");
-    }
-
-    // ==================== CAMBIAR ROL ====================
+    // 👇 MÉTODO PARA CAMBIAR EL ROL 👇
     public function changeRole(Request $request, User $user)
     {
-        if (auth()->user()->role !== 'Root') {
-            abort(403);
-        }
-
-        if ($user->id === auth()->id()) {
-            return redirect()->back()->with('error', '❌ No puedes cambiar tu propio rol.');
-        }
-
         $request->validate([
-            'role' => 'required|in:Root,Administrador,Usuario',
+            'role' => 'required|in:Root,Administrador,Usuario,operario',
         ]);
 
-        $user->update(['role' => $request->role]);
+        $user->role = $request->role;
+        $user->save();
 
-        return redirect()->back()->with('success', '✅ Rol actualizado correctamente.');
+        return redirect()->route('admin.users')->with('success', "Rol de {$user->name} actualizado a {$user->role}");
     }
 
-    // ==================== DESTROY ====================
-    public function destroy(User $user)
+    // 👇 MÉTODO PARA ACTIVAR/DESACTIVAR USUARIO 👇
+    public function toggle(User $user)
     {
-        if (auth()->user()->role !== 'Root') {
-            abort(403);
+        // No permitir desactivar al propio usuario
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.users')->with('error', 'No puedes cambiarte el estado a ti mismo');
         }
 
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        $estado = $user->is_active ? 'activado' : 'desactivado';
+        return redirect()->route('admin.users')->with('success', "Usuario {$user->name} {$estado} correctamente");
+    }
+
+    public function destroy(User $user)
+    {
         if ($user->id === auth()->id()) {
-            return redirect()->back()->with('error', '❌ No puedes eliminarte a ti mismo.');
+            return redirect()->route('admin.users')->with('error', 'No puedes eliminarte a ti mismo');
         }
 
         $user->delete();
 
-        return redirect()->back()->with('success', '✅ Usuario eliminado correctamente.');
+        return redirect()->route('admin.users')->with('success', 'Usuario eliminado correctamente');
     }
 }
