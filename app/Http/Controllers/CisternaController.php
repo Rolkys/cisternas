@@ -177,39 +177,43 @@ class CisternaController extends Controller
 
     public function bulkConfirmStore(Request $request)
     {
-        $tempPath    = session('bulk_tempPath');
-        $preview     = session('bulk_preview');
-        $seleccionados = $request->input('seleccionados', []);
+        $tempPath   = session('bulk_tempPath');
+        $filas      = $request->input('filas',[]);
 
         $imported = 0;
         $omitidos = 0;
 
-        foreach ($preview as $fila) {
-            if (!in_array($fila['_hoja'], $seleccionados)) {
+        foreach($filas as $fila){
+            // Si el checkbox no estaba marcado, omitir
+            if(empty($fila['_incluir'])){
                 $omitidos++;
                 continue;
             }
 
+            // Verificar duplicado con los datos editados
             $existe = Cisterna::where('OF', $fila['OF'])
                                 ->where('NumeroCisterna', $fila['NumeroCisterna'])
                                 ->exists();
-            if ($existe) {
+            
+            if($existe){
                 $omitidos++;
                 continue;
             }
 
-            $data = $fila;
-            unset($data['_hoja'], $data['_error']);
+            // Quitar los campos internos y guardar el resto
+            $data = collect($fila)->except(['_incluir', '_hoja'])->toArray();
             Cisterna::create($data);
             $imported++;
-        }
 
-        if ($tempPath) {
-            \Storage::delete($tempPath);
-        }
-        session()->forget(['bulk_preview', 'bulk_tempPath']);
+            }
 
-        return redirect()->route('cisterna.index')
+            if($tempPath){
+                \Storage::delete($tempPath);
+            }
+
+            session()->forget(['bulk_preview', 'bulk_tempPath']);
+
+            return redirect()->route('cisterna.index')
                             ->with('success', "✅ {$imported} cisternas importadas. {$omitidos} omitidas.");
     }
 
