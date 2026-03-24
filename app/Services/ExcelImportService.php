@@ -14,7 +14,7 @@ class ExcelImportService
         $spreadsheet = IOFactory::load($filePath);
         $preview     = [];
 foreach ($spreadsheet->getWorksheetIterator() as $worksheet) {
-    $name = $worksheet->getTitle();
+    $name = trim($worksheet->getTitle());
     if (!preg_match('/^C\d+$/', $name)) continue;
 
     try {
