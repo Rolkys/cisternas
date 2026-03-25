@@ -257,29 +257,55 @@
 
                         {{-- ==================== CAMPOS EDITABLES POR TODOS ==================== --}}
                         <h5 class="mb-3">📊 Datos de Consumo</h5>
-                        
+
+                        @if(auth()->user()->isAdmin())
                         <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="HoraRealConsumoL1" class="form-label">Hora Real Consumo L1</label>
+                            <div class="col-md-6 mb-3">
+                                <label for="HoraEstimadaConsumoL1" class="form-label">H. Estimada Consumo L1</label>
+                                <input type="time" class="form-control @error('HoraEstimadaConsumoL1') is-invalid @enderror"
+                                       id="HoraEstimadaConsumoL1" name="HoraEstimadaConsumoL1"
+                                       value="{{ old('HoraEstimadaConsumoL1', $cisterna->HoraEstimadaConsumoL1?->format('H:i')) }}">
+                                @error('HoraEstimadaConsumoL1')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="HoraEstimadaConsumoL2" class="form-label">H. Estimada Consumo L2</label>
+                                <input type="time" class="form-control @error('HoraEstimadaConsumoL2') is-invalid @enderror"
+                                       id="HoraEstimadaConsumoL2" name="HoraEstimadaConsumoL2"
+                                       value="{{ old('HoraEstimadaConsumoL2', $cisterna->HoraEstimadaConsumoL2?->format('H:i')) }}">
+                                @error('HoraEstimadaConsumoL2')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        @endif
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="HoraRealConsumoL1" class="form-label">H. Real Consumo L1</label>
                                 <input type="time" class="form-control @error('HoraRealConsumoL1') is-invalid @enderror" 
                                        id="HoraRealConsumoL1" name="HoraRealConsumoL1" 
-                                       value="{{ old('HoraRealConsumoL1', $cisterna->HoraRealConsumoL1 ? \Carbon\Carbon::parse($cisterna->HoraRealConsumoL1)->format('H:i') : '') }}">
+                                       value="{{ old('HoraRealConsumoL1', $cisterna->HoraRealConsumoL1?->format('H:i')) }}">
                                 @error('HoraRealConsumoL1')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div class="col-md-4 mb-3">
-                                <label for="HoraRealConsumoL2" class="form-label">Hora Real Consumo L2</label>
+                            <div class="col-md-6 mb-3">
+                                <label for="HoraRealConsumoL2" class="form-label">H. Real Consumo L2</label>
                                 <input type="time" class="form-control @error('HoraRealConsumoL2') is-invalid @enderror" 
                                        id="HoraRealConsumoL2" name="HoraRealConsumoL2" 
-                                       value="{{ old('HoraRealConsumoL2', $cisterna->HoraRealConsumoL2 ? \Carbon\Carbon::parse($cisterna->HoraRealConsumoL2)->format('H:i') : '') }}">
+                                       value="{{ old('HoraRealConsumoL2', $cisterna->HoraRealConsumoL2?->format('H:i')) }}">
                                 @error('HoraRealConsumoL2')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
 
-                            <div class="col-md-4 mb-3">
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
                                 <label for="Observaciones" class="form-label">Observaciones</label>
                                 <textarea class="form-control @error('Observaciones') is-invalid @enderror" 
                                           id="Observaciones" name="Observaciones" rows="2">{{ old('Observaciones', $cisterna->Observaciones) }}</textarea>
@@ -305,3 +331,71 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── HEC: si se rellena L1 → bloquea L2, y viceversa ──
+    const hecL1 = document.getElementById('HoraEstimadaConsumoL1');
+    const hecL2 = document.getElementById('HoraEstimadaConsumoL2');
+
+    if (hecL1 && hecL2) {
+        // Estado inicial (valores ya guardados)
+        if (hecL1.value) {
+            hecL2.disabled = true;
+        } else if (hecL2.value) {
+            hecL1.disabled = true;
+        }
+
+        hecL1.addEventListener('input', function () {
+            if (this.value) {
+                hecL2.value = '';
+                hecL2.disabled = true;
+            } else {
+                hecL2.disabled = false;
+            }
+        });
+
+        hecL2.addEventListener('input', function () {
+            if (this.value) {
+                hecL1.value = '';
+                hecL1.disabled = true;
+            } else {
+                hecL1.disabled = false;
+            }
+        });
+    }
+
+    // ── HRC: si se rellena L1 → bloquea L2, y viceversa ──
+    const hrcL1 = document.getElementById('HoraRealConsumoL1');
+    const hrcL2 = document.getElementById('HoraRealConsumoL2');
+
+    if (hrcL1 && hrcL2) {
+        // Estado inicial (valores ya guardados)
+        if (hrcL1.value) {
+            hrcL2.disabled = true;
+        } else if (hrcL2.value) {
+            hrcL1.disabled = true;
+        }
+
+        hrcL1.addEventListener('input', function () {
+            if (this.value) {
+                hrcL2.value = '';
+                hrcL2.disabled = true;
+            } else {
+                hrcL2.disabled = false;
+            }
+        });
+
+        hrcL2.addEventListener('input', function () {
+            if (this.value) {
+                hrcL1.value = '';
+                hrcL1.disabled = true;
+            } else {
+                hrcL1.disabled = false;
+            }
+        });
+    }
+
+});
+</script>

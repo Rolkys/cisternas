@@ -15,7 +15,7 @@
                 value="{{ $desde }}">
     </div>
     <div class="col-auto">
-        <label class="form-label small mb-1">Desde</label>
+        <label class="form-label small mb-1">Hasta</label>
         <input type="date" name="hasta" class="form-control-sm"
                 value="{{ $hasta }}">
     </div>
@@ -99,7 +99,7 @@
             <div class="card-body p-0">
                 <table class="table table-sm table-hover align-middle mb-0">
                     <thead style="background:#0f2130; color:#fff;">
-                        <tr>
+                        70e
                             <th>OF</th>
                             <th>Nº</th>
                             <th>Conductor</th>
@@ -110,14 +110,14 @@
                     </thead>
                     <tbody>
                         @forelse($hoy_cisternas as $c)
-                            <tr class="{{ $c->HoraRealConsumoL1 ? 'row-consumida' : ($c->Incidencias ? 'row-incidencia' : 'row-hoy') }}">
+                            <tr class="{{ ($c->HoraRealConsumoL1 || $c->HoraRealConsumoL2) ? 'row-consumida' : ($c->Incidencias ? 'row-incidencia' : 'row-hoy') }}">
                                 <td>{{ $c->OF }}</td>
                                 <td>{{ str_pad($c->NumeroCisterna, 4, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ $c->Conductor }}</td>
                                 <td>{{ $c->HoraEstimadaConsumoL1?->format('H:i') ?? '—' }}</td>
                                 <td>{{ $c->HoraEstimadaConsumoL2?->format('H:i') ?? '—' }}</td>
                                 <td>
-                                    @if($c->HoraRealConsumoL1)
+                                    @if($c->HoraRealConsumoL1 || $c->HoraRealConsumoL2)
                                         <span class="badge bg-success">Consumida</span>
                                     @elseif($c->Incidencias)
                                         <span class="badge bg-danger">Incidencia</span>
@@ -240,7 +240,7 @@
                                         <td>
                                             @if($cisterna->Incidencias)
                                                 <span class="badge bg-danger">Incidencia</span>
-                                            @elseif($cisterna->HoraRealConsumoL1)
+                                            @elseif($cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
                                                 <span class="badge bg-success">Consumida</span>
                                             @elseif($cisterna->FechaConsumoMG?->isSameDay($hoy))
                                                 <span class="badge bg-info">Hoy</span>

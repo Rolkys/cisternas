@@ -105,9 +105,6 @@
                     <th>Fecha Fab. Huelva</th>
                     <th title="Hora Estimada Consumo Línea 1">H.E.C L1</th>
                     <th title="Hora Estimada Consumo Línea 2">H.E.C L2</th>
-                    @if(auth()->user()->isAdmin())
-                        <th>Acciones</th>
-                    @endif
                 </tr>
             </thead>
             <tbody>

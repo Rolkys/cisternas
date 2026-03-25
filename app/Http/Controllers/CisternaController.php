@@ -29,7 +29,7 @@ class CisternaController extends Controller
             $texto = $request->texto;
             $query->where(function($q) use ($texto) {
                 $q->where('conductor', 'like', "%$texto%")
-                    ->orWhere('matricula', 'like', "%$texto%")
+                    ->orWhere('MatriculaCisterna', 'LIKE', "%{$texto}%")
                     ->orWhere('origen', 'like', "%$texto%")
                     ->orWhere('destino', 'like', "%$texto%");
             });
