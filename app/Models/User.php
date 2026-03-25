@@ -36,7 +36,7 @@ class User extends Authenticatable
     // Métodos de verificación de roles
     public function isAdmin(): bool
     {
-        return $this->role === 'admin' || $this->role === 'Administrador';
+        return $this->role === 'admin' || $this->role === 'Administrador' || $this->isRoot();
     }
 
     public function isRoot(): bool

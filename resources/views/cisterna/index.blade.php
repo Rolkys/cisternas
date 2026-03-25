@@ -26,12 +26,7 @@
         <a href="{{ route('planificacion.index') }}" class="btn btn-outline-info btn-sm">
             <i class="bi bi-calendar2-week"></i> Planificación
         </a>
-        {{-- Botón de gestión de usuarios - Solo para Root y Administrador --}}
-        @if(auth()->user()->isRoot() || auth()->user()->isAdmin())
-            <a href="{{ route('admin.users') }}" class="btn btn-outline-dark btn-sm">
-                <i class="bi bi-people"></i> Usuarios
-            </a>
-        @endif
+       
     </div>
 </div>
 

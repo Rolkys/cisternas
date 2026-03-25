@@ -24,19 +24,10 @@
                         @csrf
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="OF" class="form-label">OF *</label>
-                                <input type="number" class="form-control @error('OF') is-invalid @enderror" 
-                                       id="OF" name="OF" value="{{ old('OF') }}" required>
-                                @error('OF')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label for="NumeroCisterna" class="form-label">Número Cisterna *</label>
                                 <input type="number" class="form-control @error('NumeroCisterna') is-invalid @enderror" 
-                                       id="NumeroCisterna" name="NumeroCisterna" value="{{ old('NumeroCisterna') }}" required>
+                                        id="NumeroCisterna" name="NumeroCisterna" value="{{ old('NumeroCisterna') }}" required>
                                 @error('NumeroCisterna')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
