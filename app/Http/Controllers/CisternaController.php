@@ -86,7 +86,11 @@ class CisternaController extends Controller
             'FDA'                    => 'nullable|boolean',
         ]);
 
-        Cisterna::create($request->all());
+        $data = $request->all();
+
+        $data = $this->autoConsumir($data);
+
+        Cisterna::create($data);
 
         return redirect()->route('cisterna.index')
                         ->with('success', '✅ Cisterna creada exitosamente.');
@@ -131,7 +135,10 @@ class CisternaController extends Controller
                 'FDA'            => 'nullable|boolean',
             ]);
 
-            $cisterna->update($request->all());
+            $data = $request->all();
+            // PROBLEMA 3: Auto-consumir si el destino no es Moratalla
+            $data = $this->autoConsumir($data, $cisterna);
+            $cisterna->update($data);
 
             return redirect()->route('cisterna.index')
                             ->with('success', '✅ Cisterna actualizada correctamente');
@@ -159,7 +166,9 @@ class CisternaController extends Controller
                 'FDA'            => 'nullable|boolean',
             ]);
 
-            $cisterna->update($request->all());
+            $data = $request->all();
+            $data = $this->autoConsumir($data, $cisterna);
+            $cisterna->update($data);
 
             return redirect()->route('cisterna.index')
                             ->with('success', '✅ Cisterna actualizada correctamente');
@@ -207,6 +216,14 @@ class CisternaController extends Controller
         
         if (!$user->isRoot() && !$user->isAdmin()) {
             abort(403, 'No tienes permisos para eliminar registros');
+        }
+
+        // PROBLEMA 1: Guardar observaciones e incidencias antes de borrar
+        // (en sesión flash para que estén disponibles al recrear)
+        if ($cisterna->Observaciones || $cisterna->Incidencias) {
+            session()->flash('deleted_observaciones', $cisterna->Observaciones);
+            session()->flash('deleted_incidencias', $cisterna->Incidencias);
+            session()->flash('deleted_numero', $cisterna->NumeroCisterna);
         }
 
         $cisterna->delete();
@@ -344,6 +361,10 @@ class CisternaController extends Controller
             }
 
             $data = collect($fila)->except(['_incluir', '_hoja'])->toArray();
+
+            // PROBLEMA 3: Auto-consumir si destino no es Moratalla
+            $data = $this->autoConsumir($data);
+
             Cisterna::create($data);
             $imported++;
         }
@@ -458,5 +479,51 @@ class CisternaController extends Controller
             'años', 'añoSeleccionado', 'cisternasDelAño',
             'desde', 'hasta'
         ));
+    }
+
+    // ==================== HELPER: AUTO-CONSUMIR ====================
+    /**
+     * PROBLEMA 3: Si el destino no es Moratalla (o variantes),
+     * marcar automáticamente HoraRealConsumoL1 con la hora estimada o la hora actual.
+     */
+    private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
+    {
+        $destino = trim(strtolower($data['Destino'] ?? ''));
+
+        // Palabras clave que identifican Moratalla
+        $esMovatalla = str_contains($destino, 'moratalla') || $destino === '';
+
+        if (!$esMovatalla) {
+            // Si ya tiene hora real, no tocar
+            $yaConsumaL1 = !empty($data['HoraRealConsumoL1'])
+                || ($cisterna && $cisterna->HoraRealConsumoL1);
+            $yaConsumaL2 = !empty($data['HoraRealConsumoL2'])
+                || ($cisterna && $cisterna->HoraRealConsumoL2);
+
+            if (!$yaConsumaL1 && !$yaConsumaL2) {
+                // Usar la fecha de consumo o hoy
+                $fechaBase = !empty($data['FechaConsumoMG'])
+                    ? \Carbon\Carbon::parse($data['FechaConsumoMG'])->format('Y-m-d')
+                    : now()->format('Y-m-d');
+
+                // Usar hora estimada L1 si existe, sino hora actual
+                if (!empty($data['HoraEstimadaConsumoL1'])) {
+                    // HoraEstimadaConsumoL1 puede venir como 'HH:MM' o datetime
+                    $hora = strlen($data['HoraEstimadaConsumoL1']) <= 5
+                        ? $data['HoraEstimadaConsumoL1']
+                        : \Carbon\Carbon::parse($data['HoraEstimadaConsumoL1'])->format('H:i');
+                    $data['HoraRealConsumoL1'] = $fechaBase . ' ' . $hora . ':00';
+                } elseif (!empty($data['HoraEstimadaConsumoL2'])) {
+                    $hora = strlen($data['HoraEstimadaConsumoL2']) <= 5
+                        ? $data['HoraEstimadaConsumoL2']
+                        : \Carbon\Carbon::parse($data['HoraEstimadaConsumoL2'])->format('H:i');
+                    $data['HoraRealConsumoL2'] = $fechaBase . ' ' . $hora . ':00';
+                } else {
+                    $data['HoraRealConsumoL1'] = $fechaBase . ' ' . now()->format('H:i') . ':00';
+                }
+            }
+        }
+
+        return $data;
     }
 }

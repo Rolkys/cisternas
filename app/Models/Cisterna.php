@@ -18,7 +18,7 @@ class Cisterna extends Model
         'Conductor',
         'Telefono',
         'Transporte',
-        'FechaFabricacionHuelba',
+        'FechaFabricacionHuelva',
         'HoraSalida',
         'FechaEntradaMG',
         'HoraLlegadaEstimada',
@@ -36,6 +36,7 @@ class Cisterna extends Model
     protected function casts(): array
     {
         return [
+            // Fechas/horas
             'FechaFabricacionHuelba'    => 'datetime',
             'HoraSalida'                => 'datetime',
             'FechaEntradaMG'            => 'datetime',
@@ -45,8 +46,10 @@ class Cisterna extends Model
             'HoraEstimadaConsumoL2'     => 'datetime',
             'HoraRealConsumoL1'         => 'datetime',
             'HoraRealConsumoL2'         => 'datetime',
-            'GlobalGAP'                 => 'datetime',
-            'FDA'                       => 'datetime',
+
+            // Booleanos
+            'GlobalGAP'                 => 'boolean',
+            'FDA'                       => 'boolean',
         ];
     }
 }

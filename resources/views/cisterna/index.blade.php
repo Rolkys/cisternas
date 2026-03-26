@@ -35,11 +35,13 @@
     </div>
 </div>
 
+
+
 {{-- Filtros --}}
 <form method="GET" action="{{ route('cisterna.index') }}" class="row g-2 mb-3">
     <div class="col-12 col-md-4">
         <input type="text" name="texto" class="form-control"
-                placeholder="Buscar conductor,matrícula cisterna, origen..."
+                placeholder="Buscar conductor, matrícula cisterna, origen..."
                 value="{{ request('texto') }}">
     </div>
     <div class="col-12 col-md-3">
@@ -58,9 +60,10 @@
 
 {{-- Tabla --}}
 <div class="table-responsive">
-    <table class="table table-bordered table-hover align-middle mb-0" style="font-size: 0.82rem; white-space: nowrap;">
+    <table class="table table-bordered table-hover align-middle mb-0"
+            style="font-size: 0.82rem; white-space: nowrap;">
         <thead>
-             <tr>
+            <tr>
                 <th>OF</th>
                 <th>Nº</th>
                 <th>Origen</th>
@@ -69,23 +72,21 @@
                 <th title="Matrícula Cisterna">Matrícula.C</th>
                 <th>Conductor</th>
                 <th>Teléfono</th>
+                {{-- II: Quitadas H.E.C L1 y L2 — solo Fecha Consumo --}}
                 <th title="Fecha Consumo MG">Fecha Consumo</th>
-                <th title="Hora Estimada Consumo Línea 1">H.E.C L1</th>
                 <th title="Hora Real Consumo Línea 1">H.R.C L1</th>
-                <th title="Hora Estimada Consumo Línea 2">H.E.C L2</th>
                 <th title="Hora Real Consumo Línea 2">H.R.C L2</th>
                 <th title="Food and Drug Administration">FDA</th>
                 <th title="GlobalGAP">GAP</th>
                 <th>Estado</th>
                 <th>Acciones</th>
-             </tr>
+            </tr>
         </thead>
         <tbody>
             @forelse($cisternas as $cisterna)
 
                 @php
                     $hoy = now()->startOfDay();
-                    $rowClass = '';
                     if ($cisterna->Incidencias) {
                         $rowClass = 'row-incidencia';
                     } elseif ($cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2) {
@@ -100,20 +101,19 @@
                 @endphp
 
                 <tr class="{{ $rowClass }}">
-                     <td>{{ $cisterna->OF }}</td>
-                     <td>{{ str_pad($cisterna->NumeroCisterna, 4, '0', STR_PAD_LEFT) }}</td>
-                     <td>{{ $cisterna->Origen ?: '—' }}</td>
-                     <td>{{ $cisterna->Destino ?: '—' }}</td>
-                     <td>{{ $cisterna->Matricula ?: '—' }}</td>
-                     <td>{{ $cisterna->MatriculaCisterna ?: '—' }}</td>
-                     <td>{{ $cisterna->Conductor }}</td>
-                     <td>{{ $cisterna->Telefono ?: '—' }}</td>
-                     <td>{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}</td>
-                     <td>{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '—' }}</td>
-                     <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '—' }}</td>
-                     <td>{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '—' }}</td>
-                     <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '—' }}</td>
-                     <td>
+                    <td>{{ $cisterna->OF }}</td>
+                    <td>{{ str_pad($cisterna->NumeroCisterna, 4, '0', STR_PAD_LEFT) }}</td>
+                    <td>{{ $cisterna->Origen ?: '—' }}</td>
+                    <td>{{ $cisterna->Destino ?: '—' }}</td>
+                    <td>{{ $cisterna->Matricula ?: '—' }}</td>
+                    <td>{{ $cisterna->MatriculaCisterna ?: '—' }}</td>
+                    <td>{{ $cisterna->Conductor }}</td>
+                    <td>{{ $cisterna->Telefono ?: '—' }}</td>
+                    {{-- II: Solo fecha, sin H.E.C --}}
+                    <td>{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}</td>
+                    <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '—' }}</td>
+                    <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '—' }}</td>
+                    <td>
                         @if($cisterna->FDA === true)
                             <span class="badge bg-success">Sí</span>
                         @elseif($cisterna->FDA === false)
@@ -121,8 +121,8 @@
                         @else
                             <span class="text-muted">—</span>
                         @endif
-                     </td>
-                     <td>
+                    </td>
+                    <td>
                         @if($cisterna->GlobalGAP === true)
                             <span class="badge bg-success">Sí</span>
                         @elseif($cisterna->GlobalGAP === false)
@@ -130,8 +130,8 @@
                         @else
                             <span class="text-muted">—</span>
                         @endif
-                     </td>
-                     <td>
+                    </td>
+                    <td>
                         @if($cisterna->Incidencias)
                             <span class="badge bg-danger">Incidencia</span>
                         @elseif($cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
@@ -141,19 +141,16 @@
                         @else
                             <span class="badge bg-warning text-dark">Pendiente</span>
                         @endif
-                     </td>
-                     <td>
-                        {{-- Botón modal consumo --}}
-                        <button class="btn btn-sm btn-outline-warning"
+                    </td>
+                    <td>
+                        {{-- Botón modal consumo - datos pasados por atributo data para evitar JS inline --}}
+                        <button class="btn btn-sm btn-outline-warning btn-consumo"
                                 title="Registrar consumo"
-                                onclick="abrirModal(
-                                    {{ $cisterna->IdCisterna }},
-                                    '{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '' }}',
-                                    '{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '' }}',
-                                    '{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '' }}',
-                                    '{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '' }}',
-                                    '{{ addslashes($cisterna->Observaciones ?? '') }}'
-                                )">
+                                data-id="{{ $cisterna->IdCisterna }}"
+                                data-hec-l1="{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '' }}"
+                                data-hrc-l1="{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '' }}"
+                                data-hec-l2="{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '' }}"
+                                data-hrc-l2="{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '' }}"
                             <i class="bi bi-clock"></i>
                         </button>
                         <a href="{{ route('cisterna.show', $cisterna->IdCisterna) }}"
@@ -178,20 +175,32 @@
                                 </button>
                             </form>
                         @endif
-                     </td>
-                 </tr>
+                    </td>
+                </tr>
+
             @empty
                 <tr>
-                    <td colspan="17" class="text-center text-muted">No hay cisternas registradas.</td>
+                    <td colspan="16" class="text-center text-muted">
+                        No hay cisternas registradas.
+                    </td>
                 </tr>
             @endforelse
         </tbody>
     </table>
 </div>
 
-{{-- Paginación inferior (móvil) --}}
+{{-- Paginación inferior --}}
 <div class="d-flex justify-content-center mt-3">
     {{ $cisternas->withQueryString()->links('pagination::bootstrap-4') }}
+</div>
+
+{{-- Leyenda de colores --}}
+<div class="mt-3 d-flex flex-wrap gap-3 small text-muted">
+    <span><span class="legend-box" style="background:var(--row-consumida)"></span>Consumida</span>
+    <span><span class="legend-box" style="background:var(--row-incidencia)"></span>Incidencia</span>
+    <span><span class="legend-box" style="background:var(--row-hoy)"></span>Hoy</span>
+    <span><span class="legend-box" style="background:var(--row-futura)"></span>Futura</span>
+    <span><span class="legend-box" style="background:var(--row-pendiente)"></span>Pendiente</span>
 </div>
 
 {{-- Modal consumo --}}
@@ -202,8 +211,11 @@
                 @csrf
                 @method('PATCH')
                 <div class="modal-header" style="background:#0f2130; color:#fff;">
-                    <h5 class="modal-title"><i class="bi bi-clock"></i> Registrar Consumo</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title">
+                        <i class="bi bi-clock"></i> Registrar Consumo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
 
@@ -211,14 +223,17 @@
                         Solo se puede rellenar <strong>L1</strong> o <strong>L2</strong>, no ambas.
                     </div>
 
+                    {{-- II: Solo mostramos etiquetas informativas sin H.E.C en las columnas --}}
                     <div class="row g-3 mb-3">
                         <div class="col-6">
-                            <label class="form-label text-muted small">H. Estimada L1</label>
-                            <input type="time" id="info-hec-l1" class="form-control form-control-sm bg-light" readonly>
+                            <label class="form-label text-muted small">H. Estimada L1 (ref.)</label>
+                            <input type="time" id="info-hec-l1"
+                                    class="form-control form-control-sm bg-light" readonly>
                         </div>
                         <div class="col-6">
-                            <label class="form-label text-muted small">H. Estimada L2</label>
-                            <input type="time" id="info-hec-l2" class="form-control form-control-sm bg-light" readonly>
+                            <label class="form-label text-muted small">H. Estimada L2 (ref.)</label>
+                            <input type="time" id="info-hec-l2"
+                                    class="form-control form-control-sm bg-light" readonly>
                         </div>
                     </div>
 
@@ -227,22 +242,22 @@
                     <div class="row g-3 mb-3">
                         <div class="col-6">
                             <label class="form-label fw-bold">H. Real Consumo L1</label>
-                            <input type="time" name="HoraRealConsumoL1" id="hrc-l1" class="form-control">
-                        </div>
+                            <input type="time" name="HoraRealConsumoL1"
+                                    id="hrc-l1" class="form-control">
+                        </div>  
                         <div class="col-6">
                             <label class="form-label fw-bold">H. Real Consumo L2</label>
-                            <input type="time" name="HoraRealConsumoL2" id="hrc-l2" class="form-control">
+                            <input type="time" name="HoraRealConsumoL2"
+                                    id="hrc-l2" class="form-control">
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Observaciones</label>
-                        <textarea name="Observaciones" id="modal-obs" class="form-control" rows="3"></textarea>
-                    </div>
+                    
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Guardar
                     </button>
@@ -253,44 +268,19 @@
 </div>
 
 <script>
-function abrirModal(id, hecL1, hrcL1, hecL2, hrcL2, obs) {
-    document.getElementById('form-consumo').action = `/cisterna/${id}/consumo`;
-    document.getElementById('info-hec-l1').value = hecL1;
-    document.getElementById('info-hec-l2').value = hecL2;
-    document.getElementById('hrc-l1').value = hrcL1;
-    document.getElementById('hrc-l2').value = hrcL2;
-    document.getElementById('modal-obs').value = obs;
-
-    document.getElementById('hrc-l1').disabled = false;
-    document.getElementById('hrc-l2').disabled = false;
-
-    if (hrcL1) {
-        document.getElementById('hrc-l2').disabled = true;
-    } else if (hrcL2) {
-        document.getElementById('hrc-l1').disabled = true;
-    }
-
-    new bootstrap.Modal(document.getElementById('modalConsumo')).show();
-}
-
-document.getElementById('hrc-l1').addEventListener('input', function() {
-    const l2 = document.getElementById('hrc-l2');
-    if (this.value) {
-        l2.value = '';
-        l2.disabled = true;
-    } else {
-        l2.disabled = false;
-    }
-});
-
-document.getElementById('hrc-l2').addEventListener('input', function() {
-    const l1 = document.getElementById('hrc-l1');
-    if (this.value) {
-        l1.value = '';
-        l1.disabled = true;
-    } else {
-        l1.disabled = false;
-    }
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-consumo').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            abrirModal(
+                this.dataset.id,
+                this.dataset.hecL1,
+                this.dataset.hrcL1,
+                this.dataset.hecL2,
+                this.dataset.hrcL2,
+                this.dataset.obs
+            );
+        });
+    });
 });
 </script>
 

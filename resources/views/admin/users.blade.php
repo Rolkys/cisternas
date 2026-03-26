@@ -70,7 +70,9 @@
                 </div>
 
                 <div class="col-auto d-flex align-items-end">
-                    <button type="button" class="btn btn-outline-secondary" onclick="generarPassword()" title="Generar contraseña">
+                    {{-- generarPassword() definido en public/js/app-custom.js --}}
+                    <button type="button" class="btn btn-outline-secondary"
+                            onclick="generarPassword()" title="Generar contraseña">
                         🔑 Generar
                     </button>
                 </div>
@@ -104,14 +106,15 @@
     <div class="card-body p-0">
         <table class="table table-bordered table-hover align-middle mb-0">
             <thead>
-                32
+                <tr>
                     <th>Nombre</th>
                     <th>Email</th>
                     <th>Rol</th>
                     <th>Estado</th>
                     <th>Registro</th>
                     <th>Acciones</th>
-                </thead>
+                </tr>
+            </thead>
             <tbody>
                 @foreach($users as $user)
                 <tr class="{{ !$user->is_active ? 'table-secondary text-muted' : '' }}">
@@ -124,10 +127,10 @@
                                 @method('PATCH')
                                 <div class="input-group input-group-sm">
                                     <select name="role" class="form-select form-select-sm">
-                                        <option value="operario" {{ $user->role == 'operario' ? 'selected' : '' }}>Operario</option>
-                                        <option value="Usuario" {{ $user->role == 'Usuario' ? 'selected' : '' }}>Usuario</option>
-                                        <option value="Administrador" {{ $user->role == 'Administrador' ? 'selected' : '' }}>Administrador</option>
-                                        <option value="Root" {{ $user->role == 'Root' ? 'selected' : '' }}>Root</option>
+                                        <option value="operario"     {{ $user->role == 'operario'     ? 'selected' : '' }}>Operario</option>
+                                        <option value="Usuario"      {{ $user->role == 'Usuario'      ? 'selected' : '' }}>Usuario</option>
+                                        <option value="Administrador"{{ $user->role == 'Administrador'? 'selected' : '' }}>Administrador</option>
+                                        <option value="Root"         {{ $user->role == 'Root'         ? 'selected' : '' }}>Root</option>
                                     </select>
                                     <button class="btn btn-outline-secondary btn-sm" type="submit">
                                         <i class="bi bi-check"></i>
@@ -136,10 +139,10 @@
                             </form>
                         @else
                             <span class="badge
-                                @if($user->role === 'Root') bg-danger
+                                @if($user->role === 'Root')          bg-danger
                                 @elseif($user->role === 'Administrador') bg-warning text-dark
-                                @elseif($user->role === 'operario') bg-info
-                                @else bg-secondary
+                                @elseif($user->role === 'operario')  bg-info
+                                @else                                bg-secondary
                                 @endif">
                                 {{ $user->role === 'operario' ? 'Operario' : $user->role }}
                             </span>
@@ -155,11 +158,14 @@
                             </button>
                         </form>
                     </td>
-                    <td class="small">{{ $user->fecha_registro ? date('d/m/Y', strtotime($user->fecha_registro)) : '—' }}</td>
+                    <td class="small">
+                        {{ $user->fecha_registro ? date('d/m/Y', strtotime($user->fecha_registro)) : '—' }}
+                    </td>
                     <td>
                         @if(auth()->user()->role === 'Root' && $user->id !== auth()->id())
-                            <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-                                onsubmit="return confirm('¿Eliminar este usuario?')">
+                            <form method="POST"
+                                    action="{{ route('admin.users.destroy', $user) }}"
+                                    onsubmit="return confirm('¿Eliminar este usuario?')">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger">
@@ -175,26 +181,4 @@
     </div>
 </div>
 @endsection
-
-<script>
-function generarPassword() {
-    // Coge la parte del email antes del @
-    const email = document.getElementById('email').value;
-    const parte = email.split('@')[0].toUpperCase();
-
-    if (!parte) {
-        alert('Introduce primero el email.');
-        return;
-    }
-
-    // Primera y última letra en ASCII
-    const first = parte.charCodeAt(0);
-    const last  = parte.charCodeAt(parte.length - 1);
-    const password = parte + first + last;
-
-    document.getElementById('password_generada').value = password;
-
-    // Desbloquear botón crear
-    document.getElementById('btn-crear').removeAttribute('disabled');
-}
-</script>
+{{-- generarPassword() y toggleTodos() ya están en public/js/app-custom.js --}}

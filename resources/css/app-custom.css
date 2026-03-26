@@ -1,0 +1,228 @@
+/* ============================================================
+    Control de Cisternas — estilos personalizados
+    Archivo: public/css/app-custom.css
+   ============================================================ */
+
+/* ---------- Variables de marca ---------- */
+:root {
+    --mg-red:       #c71b1b;
+    --mg-red-dark:  #a31515;
+    --mg-navy:      #0f2130;
+    --mg-black:     #1a1a1a;
+    --mg-dark-gray: #2c2c2c;
+    --mg-bg:        #f8f9fa;
+
+    /* Estado de fila */
+    --row-consumida:  #adebb3;
+    --row-incidencia: #FF746C;
+    --row-hoy:        #90D5FF;
+    --row-futura:     #FFEE8C;
+    --row-pendiente:  #e9ecef;
+}
+
+/* ---------- Base ---------- */
+body {
+    background: var(--mg-bg);
+    color: var(--mg-black);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+    background: linear-gradient(135deg, var(--mg-navy) 0%, var(--mg-black) 100%) !important;
+    border-bottom: 2px solid var(--mg-red);
+}
+.navbar-brand,
+.nav-link {
+    color: #fff !important;
+}
+.nav-link:hover {
+    color: var(--mg-red) !important;
+}
+
+/* ---------- Botones de marca ---------- */
+.btn-primary {
+    background-color: var(--mg-red);
+    border-color:     var(--mg-red);
+    transition: all 0.2s ease;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--mg-red-dark);
+    border-color:     var(--mg-red-dark);
+    transform: translateY(-1px);
+}
+
+/* Botón outline con rojo */
+.btn-outline-primary {
+    color: var(--mg-red);
+    border-color: var(--mg-red);
+}
+.btn-outline-primary:hover {
+    background-color: var(--mg-red);
+    border-color: var(--mg-red);
+    color: white;
+}
+
+/* ---------- Cabecera de tabla ---------- */
+.table thead {
+    background: linear-gradient(135deg, var(--mg-navy) 0%, var(--mg-black) 100%);
+    color: #fff;
+}
+.table thead th {
+    border-bottom: 2px solid var(--mg-red);
+    font-weight: 600;
+}
+
+/* ---------- Colores de fila por estado ---------- */
+.table > tbody > tr.row-consumida  > td { background-color: var(--row-consumida)  !important; }
+.table > tbody > tr.row-incidencia > td { background-color: var(--row-incidencia) !important; }
+.table > tbody > tr.row-hoy        > td { background-color: var(--row-hoy)        !important; }
+.table > tbody > tr.row-futura     > td { background-color: var(--row-futura)     !important; }
+.table > tbody > tr.row-pendiente  > td { background-color: var(--row-pendiente)  !important; }
+
+/* Alias sin prefijo (usado en vistas antiguas) */
+.row-consumida  { background-color: var(--row-consumida)  !important; }
+.row-incidencia { background-color: var(--row-incidencia) !important; }
+.row-hoy        { background-color: var(--row-hoy)        !important; }
+.row-futura     { background-color: var(--row-futura)     !important; }
+.row-pendiente  { background-color: var(--row-pendiente)  !important; }
+
+/* Hover en filas con efecto sutil */
+.table tbody tr:hover td {
+    filter: brightness(0.97);
+    transition: filter 0.2s ease;
+}
+
+/* ---------- Pantalla de login ---------- */
+body.login-page {
+    background: linear-gradient(135deg, var(--mg-navy) 0%, var(--mg-black) 100%) !important;
+}
+.login-page .card {
+    border-top: 4px solid var(--mg-red);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+.login-page .btn-primary {
+    background: linear-gradient(135deg, var(--mg-red) 0%, var(--mg-red-dark) 100%);
+    border: none;
+}
+.login-page .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(199,27,27,0.3);
+}
+
+/* ---------- Leyenda de colores (footer de index) ---------- */
+.legend-box {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,.15);
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+/* ---------- Columna observaciones en tabla ---------- */
+.col-observaciones {
+    max-width: 200px;
+    white-space: normal;
+    word-break: break-word;
+    font-size: 0.78rem;
+    color: #555;
+}
+
+/* ---------- Elementos adicionales con rojo y negro ---------- */
+/* Badges personalizados */
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+.badge.bg-danger {
+    background-color: var(--mg-red) !important;
+}
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: var(--mg-black);
+}
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: var(--mg-black);
+}
+
+/* Paginación personalizada */
+.pagination .page-link {
+    color: var(--mg-red);
+    border-color: #dee2e6;
+}
+.pagination .page-item.active .page-link {
+    background-color: var(--mg-red);
+    border-color: var(--mg-red);
+}
+.pagination .page-link:hover {
+    color: var(--mg-red-dark);
+    background-color: #f8f9fa;
+}
+
+/* Modales con acentos rojos */
+.modal-header {
+    background: linear-gradient(135deg, var(--mg-navy) 0%, var(--mg-black) 100%);
+    border-bottom: 2px solid var(--mg-red);
+}
+.modal-header .modal-title {
+    color: white;
+}
+
+/* Alertas con borde rojo */
+.alert-warning {
+    border-left: 4px solid var(--mg-red);
+    background-color: #fff3cd;
+}
+
+/* Botones outline en general */
+.btn-outline-secondary:hover {
+    background-color: var(--mg-dark-gray);
+    border-color: var(--mg-dark-gray);
+    color: white;
+}
+
+/* Formularios - focus en campos */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--mg-red);
+    box-shadow: 0 0 0 0.2rem rgba(199,27,27,0.25);
+}
+
+/* Tarjetas y contenedores */
+.card {
+    border-radius: 8px;
+    overflow: hidden;
+}
+.card-header {
+    background: linear-gradient(135deg, var(--mg-navy) 0%, var(--mg-black) 100%);
+    color: white;
+    border-bottom: 2px solid var(--mg-red);
+}
+
+/* Footer de la aplicación (si existe) */
+footer {
+    background: linear-gradient(135deg, var(--mg-navy) 0%, var(--mg-black) 100%);
+    color: #fff;
+    padding: 1rem 0;
+    margin-top: 2rem;
+    border-top: 2px solid var(--mg-red);
+}
+
+/* Scrollbar personalizada (opcional) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--mg-bg);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--mg-red);
+    border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--mg-red-dark);
+}

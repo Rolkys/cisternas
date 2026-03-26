@@ -63,6 +63,7 @@
                     <li class="list-group-item"><strong>D17</strong> → Hora salida</li>
                     <li class="list-group-item"><strong>J16</strong> → Fecha entrada MG</li>
                     <li class="list-group-item"><strong>J17</strong> → Hora entrada MG</li>
+                    <li class="list-group-item"><strong>C14, H14, L14, D15, J15</strong> → Observaciones</li>
                 </ul>
             </div>
         </div>
