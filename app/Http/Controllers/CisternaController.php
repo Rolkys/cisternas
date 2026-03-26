@@ -21,7 +21,20 @@ class CisternaController extends Controller
                 $q2->whereYear('FechaConsumoMG', $añoActual - 1)
                     ->whereMonth('FechaConsumoMG', 12);
             })
-            ->orWhereNull('FechaConsumoMG');
+            // CAMBIO 1: También incluir por FechaEntradaMG si no hay FechaConsumoMG
+            ->orWhere(function($q3) use ($añoActual) {
+                $q3->whereNull('FechaConsumoMG')
+                    ->whereYear('FechaEntradaMG', $añoActual);
+            })
+            ->orWhere(function($q4) use ($añoActual) {
+                $q4->whereNull('FechaConsumoMG')
+                    ->whereYear('FechaEntradaMG', $añoActual - 1)
+                    ->whereMonth('FechaEntradaMG', 12);
+            })
+            ->orWhere(function($q5) use ($añoActual) {
+                $q5->whereNull('FechaConsumoMG')
+                    ->whereNull('FechaEntradaMG');
+            });
         });
 
         // Filtro por texto
@@ -35,9 +48,15 @@ class CisternaController extends Controller
             });
         }
 
-        // Filtro por fecha de consumo
+        // Filtro por fecha de consumo (también busca en FechaEntradaMG si no hay FechaConsumoMG)
         if($request->filled('fecha')){
-            $query->whereDate('FechaConsumoMG', $request->fecha);
+            $query->where(function($q) use ($request) {
+                $q->whereDate('FechaConsumoMG', $request->fecha)
+                  ->orWhere(function($q2) use ($request) {
+                      $q2->whereNull('FechaConsumoMG')
+                         ->whereDate('FechaEntradaMG', $request->fecha);
+                  });
+            });
         }
 
         $cisternas = $query->orderByDesc('numeroCisterna')->paginate(30);
@@ -136,7 +155,6 @@ class CisternaController extends Controller
             ]);
 
             $data = $request->all();
-            // PROBLEMA 3: Auto-consumir si el destino no es Moratalla
             $data = $this->autoConsumir($data, $cisterna);
             $cisterna->update($data);
 
@@ -182,7 +200,9 @@ class CisternaController extends Controller
                 'Observaciones'     => 'nullable|string',
             ]);
 
-            $base = $cisterna->FechaConsumoMG?->format('Y-m-d') ?? now()->format('Y-m-d');
+            $base = $cisterna->FechaConsumoMG?->format('Y-m-d')
+                 ?? $cisterna->FechaEntradaMG?->format('Y-m-d')
+                 ?? now()->format('Y-m-d');
 
             if ($request->has('HoraRealConsumoL1')) {
                 $cisterna->HoraRealConsumoL1 = $request->HoraRealConsumoL1
@@ -218,8 +238,6 @@ class CisternaController extends Controller
             abort(403, 'No tienes permisos para eliminar registros');
         }
 
-        // PROBLEMA 1: Guardar observaciones e incidencias antes de borrar
-        // (en sesión flash para que estén disponibles al recrear)
         if ($cisterna->Observaciones || $cisterna->Incidencias) {
             session()->flash('deleted_observaciones', $cisterna->Observaciones);
             session()->flash('deleted_incidencias', $cisterna->Incidencias);
@@ -243,9 +261,11 @@ class CisternaController extends Controller
             'Observaciones'      => 'nullable|string'
         ]);
 
-        $base = $cisterna->FechaConsumoMG?->format('Y-m-d') ?? now()->format('Y-m-d');
+        // CAMBIO 1: Fallback a FechaEntradaMG si no hay FechaConsumoMG
+        $base = $cisterna->FechaConsumoMG?->format('Y-m-d')
+             ?? $cisterna->FechaEntradaMG?->format('Y-m-d')
+             ?? now()->format('Y-m-d');
 
-        // Si es operario, solo actualiza estos campos
         if ($user->isOperario()) {
             $cisterna->HoraRealConsumoL1 = $request->HoraRealConsumoL1
                 ? $base . ' ' . $request->HoraRealConsumoL1 . ':00'
@@ -257,7 +277,6 @@ class CisternaController extends Controller
 
             $cisterna->Observaciones = $request->Observaciones ?? $cisterna->Observaciones;
         } else {
-            // Root, Admin y User pueden actualizar todos los campos
             $cisterna->HoraRealConsumoL1 = $request->HoraRealConsumoL1
                 ? $base . ' ' . $request->HoraRealConsumoL1 . ':00'
                 : null;
@@ -331,7 +350,7 @@ class CisternaController extends Controller
         return view('cisterna.bulk_confirm', compact('preview'));
     }
 
-        public function bulkConfirmStore(Request $request)
+    public function bulkConfirmStore(Request $request)
     {
         $user = Auth::user();
  
@@ -347,13 +366,11 @@ class CisternaController extends Controller
  
         foreach ($filas as $fila) {
  
-            // Si no marcó el checkbox de incluir, saltar
             if (empty($fila['_incluir'])) {
                 $omitidos++;
                 continue;
             }
  
-            // Comprobar duplicado
             $existe = Cisterna::where('OF', $fila['OF'])
                                 ->where('NumeroCisterna', $fila['NumeroCisterna'])
                                 ->exists();
@@ -363,20 +380,15 @@ class CisternaController extends Controller
                 continue;
             }
 
-            // Quitar campos internos del form que no son columnas de BD
             $data = collect($fila)->except(['_incluir', '_hoja'])->toArray();
  
-            // Los checkboxes desmarcados NO se envían en POST → normalizarlos a false
-            // para que el cast 'boolean' del modelo funcione correctamente
             $data['GlobalGAP'] = isset($fila['GlobalGAP']) ? (bool) $fila['GlobalGAP'] : false;
             $data['FDA']       = isset($fila['FDA'])       ? (bool) $fila['FDA']       : false;
  
-            // Observaciones vacías → null en lugar de string vacío
             if (isset($data['Observaciones']) && trim($data['Observaciones']) === '') {
                 $data['Observaciones'] = null;
             }
  
-            // Auto-consumir si destino no es Moratalla
             $data = $this->autoConsumir($data);
  
             Cisterna::create($data);
@@ -496,33 +508,27 @@ class CisternaController extends Controller
     }
 
     // ==================== HELPER: AUTO-CONSUMIR ====================
-    /**
-     * PROBLEMA 3: Si el destino no es Moratalla (o variantes),
-     * marcar automáticamente HoraRealConsumoL1 con la hora estimada o la hora actual.
-     */
     private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
     {
         $destino = trim(strtolower($data['Destino'] ?? ''));
 
-        // Palabras clave que identifican Moratalla
         $esMovatalla = str_contains($destino, 'moratalla') || $destino === '';
 
         if (!$esMovatalla) {
-            // Si ya tiene hora real, no tocar
             $yaConsumaL1 = !empty($data['HoraRealConsumoL1'])
                 || ($cisterna && $cisterna->HoraRealConsumoL1);
             $yaConsumaL2 = !empty($data['HoraRealConsumoL2'])
                 || ($cisterna && $cisterna->HoraRealConsumoL2);
 
             if (!$yaConsumaL1 && !$yaConsumaL2) {
-                // Usar la fecha de consumo o hoy
+                // CAMBIO 1: Fallback a FechaEntradaMG si no hay FechaConsumoMG
                 $fechaBase = !empty($data['FechaConsumoMG'])
                     ? \Carbon\Carbon::parse($data['FechaConsumoMG'])->format('Y-m-d')
-                    : now()->format('Y-m-d');
+                    : (!empty($data['FechaEntradaMG'])
+                        ? \Carbon\Carbon::parse($data['FechaEntradaMG'])->format('Y-m-d')
+                        : now()->format('Y-m-d'));
 
-                // Usar hora estimada L1 si existe, sino hora actual
                 if (!empty($data['HoraEstimadaConsumoL1'])) {
-                    // HoraEstimadaConsumoL1 puede venir como 'HH:MM' o datetime
                     $hora = strlen($data['HoraEstimadaConsumoL1']) <= 5
                         ? $data['HoraEstimadaConsumoL1']
                         : \Carbon\Carbon::parse($data['HoraEstimadaConsumoL1'])->format('H:i');
@@ -541,18 +547,15 @@ class CisternaController extends Controller
         return $data;
     }
 
-    // TODO: Eliminar este método después de la migración o cuando ya no sea necesario
-public function destroyAll()
-{
-    // Verificar permisos
-    if (!auth()->user()->isRoot() && !auth()->user()->isAdmin()) {
-        abort(403, 'No autorizado');
+    public function destroyAll()
+    {
+        if (!auth()->user()->isRoot() && !auth()->user()->isAdmin()) {
+            abort(403, 'No autorizado');
+        }
+        
+        \App\Models\Cisterna::truncate();
+        
+        return redirect()->route('cisterna.index')
+            ->with('success', 'Todas las cisternas han sido eliminadas correctamente.');
     }
-    
-    // Eliminar todas las cisternas
-    \App\Models\Cisterna::truncate();
-    
-    return redirect()->route('cisterna.index')
-        ->with('success', 'Todas las cisternas han sido eliminadas correctamente.');
-}
 }

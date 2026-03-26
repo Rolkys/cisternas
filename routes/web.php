@@ -24,14 +24,18 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->name('admin.')->middleware('role:Root,Administrador')->group(function () {
         Route::get('/users', [AdminController::class, 'index'])->name('users');
+        Route::get('/users/create', [AdminController::class, 'create'])->name('users.create');
         Route::post('/users', [AdminController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}', [AdminController::class, 'show'])->name('users.show');
+        Route::get('/users/{user}/edit', [AdminController::class, 'edit'])->name('users.edit');
+        Route::patch('/users/{user}', [AdminController::class, 'update'])->name('users.update');
         Route::patch('/users/{user}/toggle', [AdminController::class, 'toggle'])->name('users.toggle');
         Route::patch('/users/{user}/role', [AdminController::class, 'changeRole'])->name('users.role');
         Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
     });
 
-    // TODO: Eliminar esta ruta después de la migración o cuando ya no sea necesaria
-Route::delete('cisternas/destroy-all', [CisternaController::class, 'destroyAll'])->name('cisterna.destroyAll');
+    // TODO: Eliminar esta ruta despues de la migracion o cuando ya no sea necesaria
+    Route::delete('cisternas/destroy-all', [CisternaController::class, 'destroyAll'])->name('cisterna.destroyAll');
     Route::delete('/cisterna/borrar-todas', [CisternaController::class, 'destroyAll'])->name('cisterna.destroyAll');
     Route::get('/cisterna/bulk-upload',   [CisternaController::class, 'bulkUpload'])->name('cisterna.bulk');
     Route::post('/cisterna/bulk-upload',  [CisternaController::class, 'bulkStore'])->name('cisterna.bulk.store');
@@ -45,7 +49,7 @@ Route::delete('cisternas/destroy-all', [CisternaController::class, 'destroyAll']
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/cisterna/{cisterna}/consumo', [CisternaController::class, 'updateConsumo'])->name('cisterna.consumo');
-    
+
 });
 
 require __DIR__.'/auth.php';
