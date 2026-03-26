@@ -35,8 +35,6 @@
     </div>
 </div>
 
-
-
 {{-- Filtros --}}
 <form method="GET" action="{{ route('cisterna.index') }}" class="row g-2 mb-3">
     <div class="col-12 col-md-4">
@@ -63,7 +61,7 @@
     <table class="table table-bordered table-hover align-middle mb-0"
             style="font-size: 0.82rem; white-space: nowrap;">
         <thead>
-            <tr>
+            户
                 <th>OF</th>
                 <th>Nº</th>
                 <th>Origen</th>
@@ -72,7 +70,6 @@
                 <th title="Matrícula Cisterna">Matrícula.C</th>
                 <th>Conductor</th>
                 <th>Teléfono</th>
-                {{-- II: Quitadas H.E.C L1 y L2 — solo Fecha Consumo --}}
                 <th title="Fecha Consumo MG">Fecha Consumo</th>
                 <th title="Hora Real Consumo Línea 1">H.R.C L1</th>
                 <th title="Hora Real Consumo Línea 2">H.R.C L2</th>
@@ -109,7 +106,6 @@
                     <td>{{ $cisterna->MatriculaCisterna ?: '—' }}</td>
                     <td>{{ $cisterna->Conductor }}</td>
                     <td>{{ $cisterna->Telefono ?: '—' }}</td>
-                    {{-- II: Solo fecha, sin H.E.C --}}
                     <td>{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}</td>
                     <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '—' }}</td>
                     <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '—' }}</td>
@@ -143,14 +139,13 @@
                         @endif
                     </td>
                     <td>
-                        {{-- Botón modal consumo - datos pasados por atributo data para evitar JS inline --}}
                         <button class="btn btn-sm btn-outline-warning btn-consumo"
                                 title="Registrar consumo"
                                 data-id="{{ $cisterna->IdCisterna }}"
                                 data-hec-l1="{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '' }}"
                                 data-hrc-l1="{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '' }}"
                                 data-hec-l2="{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '' }}"
-                                data-hrc-l2="{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '' }}"
+                                data-hrc-l2="{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '' }}">
                             <i class="bi bi-clock"></i>
                         </button>
                         <a href="{{ route('cisterna.show', $cisterna->IdCisterna) }}"
@@ -180,7 +175,7 @@
 
             @empty
                 <tr>
-                    <td colspan="16" class="text-center text-muted">
+                    <td colspan="15" class="text-center text-muted">
                         No hay cisternas registradas.
                     </td>
                 </tr>
@@ -210,7 +205,7 @@
             <form method="POST" id="form-consumo">
                 @csrf
                 @method('PATCH')
-                <div class="modal-header" style="background:#0f2130; color:#fff;">
+                <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="bi bi-clock"></i> Registrar Consumo
                     </h5>
@@ -223,7 +218,6 @@
                         Solo se puede rellenar <strong>L1</strong> o <strong>L2</strong>, no ambas.
                     </div>
 
-                    {{-- II: Solo mostramos etiquetas informativas sin H.E.C en las columnas --}}
                     <div class="row g-3 mb-3">
                         <div class="col-6">
                             <label class="form-label text-muted small">H. Estimada L1 (ref.)</label>
@@ -252,8 +246,6 @@
                         </div>
                     </div>
 
-                    
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary"
@@ -276,8 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.dataset.hecL1,
                 this.dataset.hrcL1,
                 this.dataset.hecL2,
-                this.dataset.hrcL2,
-                this.dataset.obs
+                this.dataset.hrcL2
             );
         });
     });

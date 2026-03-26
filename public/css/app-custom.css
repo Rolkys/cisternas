@@ -1,0 +1,109 @@
+/* ============================================================
+   Control de Cisternas — estilos personalizados
+   ============================================================ */
+
+:root {
+    --mg-red: #c71b1b;
+    --mg-red-dark: #a31515;
+    --mg-navy: #0f2130;
+    --mg-black: #000000;
+    --mg-bg: #f8f9fa;
+
+    --row-consumida: #adebb3;
+    --row-incidencia: #FF746C;
+    --row-hoy: #90D5FF;
+    --row-futura: #FFEE8C;
+    --row-pendiente: #e9ecef;
+}
+
+body {
+    background: var(--mg-bg);
+}
+
+/* NAVBAR - NEGRO */
+.navbar {
+    background-color: #000000 !important;
+}
+.navbar-brand,
+.nav-link {
+    color: #ffffff !important;
+}
+.navbar-brand:hover,
+.nav-link:hover {
+    color: var(--mg-red) !important;
+}
+
+/* BOTONES - ROJO */
+.btn-primary {
+    background-color: var(--mg-red) !important;
+    border-color: var(--mg-red) !important;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--mg-red-dark) !important;
+    border-color: var(--mg-red-dark) !important;
+}
+
+.btn-outline-primary {
+    color: var(--mg-red) !important;
+    border-color: var(--mg-red) !important;
+}
+.btn-outline-primary:hover {
+    background-color: var(--mg-red) !important;
+    border-color: var(--mg-red) !important;
+    color: white !important;
+}
+
+/* TABLA */
+.table thead {
+    background-color: var(--mg-navy);
+    color: #fff;
+}
+
+/* FILAS POR ESTADO */
+.table > tbody > tr.row-consumida > td { background-color: var(--row-consumida) !important; }
+.table > tbody > tr.row-incidencia > td { background-color: var(--row-incidencia) !important; }
+.table > tbody > tr.row-hoy > td { background-color: var(--row-hoy) !important; }
+.table > tbody > tr.row-futura > td { background-color: var(--row-futura) !important; }
+.table > tbody > tr.row-pendiente > td { background-color: var(--row-pendiente) !important; }
+
+.row-consumida { background-color: var(--row-consumida) !important; }
+.row-incidencia { background-color: var(--row-incidencia) !important; }
+.row-hoy { background-color: var(--row-hoy) !important; }
+.row-futura { background-color: var(--row-futura) !important; }
+.row-pendiente { background-color: var(--row-pendiente) !important; }
+
+/* PAGINACIÓN */
+.page-link {
+    color: var(--mg-red) !important;
+}
+.page-item.active .page-link {
+    background-color: var(--mg-red) !important;
+    border-color: var(--mg-red) !important;
+    color: white !important;
+}
+
+/* LOGIN */
+body.login-page {
+    background-color: #F7F5F2 !important;
+}
+
+/* LEYENDA */
+.legend-box {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,.15);
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.col-observaciones {
+    max-width: 200px;
+    white-space: normal;
+    word-break: break-word;
+    font-size: 0.78rem;
+    color: #555;
+}
