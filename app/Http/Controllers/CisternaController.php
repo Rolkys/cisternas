@@ -331,52 +331,66 @@ class CisternaController extends Controller
         return view('cisterna.bulk_confirm', compact('preview'));
     }
 
-    public function bulkConfirmStore(Request $request)
+        public function bulkConfirmStore(Request $request)
     {
         $user = Auth::user();
-        
+ 
         if (!$user->isRoot() && !$user->isAdmin()) {
             abort(403, 'No tienes permisos para realizar carga masiva');
         }
-        
-        $tempPath   = session('bulk_tempPath');
-        $filas      = $request->input('filas',[]);
-
+ 
+        $tempPath = session('bulk_tempPath');
+        $filas    = $request->input('filas', []);
+ 
         $imported = 0;
         $omitidos = 0;
-
-        foreach($filas as $fila){
-            if(empty($fila['_incluir'])){
+ 
+        foreach ($filas as $fila) {
+ 
+            // Si no marcó el checkbox de incluir, saltar
+            if (empty($fila['_incluir'])) {
                 $omitidos++;
                 continue;
             }
-
+ 
+            // Comprobar duplicado
             $existe = Cisterna::where('OF', $fila['OF'])
                                 ->where('NumeroCisterna', $fila['NumeroCisterna'])
                                 ->exists();
-            
-            if($existe){
+    
+            if ($existe) {
                 $omitidos++;
                 continue;
             }
 
+            // Quitar campos internos del form que no son columnas de BD
             $data = collect($fila)->except(['_incluir', '_hoja'])->toArray();
-
-            // PROBLEMA 3: Auto-consumir si destino no es Moratalla
+ 
+            // Los checkboxes desmarcados NO se envían en POST → normalizarlos a false
+            // para que el cast 'boolean' del modelo funcione correctamente
+            $data['GlobalGAP'] = isset($fila['GlobalGAP']) ? (bool) $fila['GlobalGAP'] : false;
+            $data['FDA']       = isset($fila['FDA'])       ? (bool) $fila['FDA']       : false;
+ 
+            // Observaciones vacías → null en lugar de string vacío
+            if (isset($data['Observaciones']) && trim($data['Observaciones']) === '') {
+                $data['Observaciones'] = null;
+            }
+ 
+            // Auto-consumir si destino no es Moratalla
             $data = $this->autoConsumir($data);
-
+ 
             Cisterna::create($data);
             $imported++;
         }
-
-        if($tempPath){
+ 
+        if ($tempPath) {
             \Storage::delete($tempPath);
         }
-
+ 
         session()->forget(['bulk_preview', 'bulk_tempPath']);
-
+ 
         return redirect()->route('cisterna.index')
-                        ->with('success', "✅ {$imported} cisternas importadas. {$omitidos} omitidas.");
+                            ->with('success', "✅ {$imported} cisternas importadas. {$omitidos} omitidas.");
     }
 
     // ==================== EXPORTAR EXCEL ====================
@@ -526,4 +540,19 @@ class CisternaController extends Controller
 
         return $data;
     }
+
+    // TODO: Eliminar este método después de la migración o cuando ya no sea necesario
+public function destroyAll()
+{
+    // Verificar permisos
+    if (!auth()->user()->isRoot() && !auth()->user()->isAdmin()) {
+        abort(403, 'No autorizado');
+    }
+    
+    // Eliminar todas las cisternas
+    \App\Models\Cisterna::truncate();
+    
+    return redirect()->route('cisterna.index')
+        ->with('success', 'Todas las cisternas han sido eliminadas correctamente.');
+}
 }

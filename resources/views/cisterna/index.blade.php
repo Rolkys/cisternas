@@ -32,6 +32,22 @@
             <i class="bi bi-calendar2-week"></i>
             <span class="d-none d-md-inline">Planificación</span>
         </a>
+        {{-- En la sección de botones superiores, después del botón de Planificación --}}
+        @if(auth()->user()->isRoot() || auth()->user()->isAdmin())
+            <form method="POST" 
+                action="{{ route('cisterna.destroyAll') }}" 
+                style="display:inline"
+                onsubmit="return confirm('¿Eliminar TODAS las cisternas? Esta acción no se puede deshacer.')">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash3"></i>
+                    <span class="d-none d-md-inline">Eliminar Todas</span>
+                </button>
+            </form>
+            {{-- TODO: Eliminar este botón después de la migración o cuando ya no sea necesario --}}
+        @endif
+        
     </div>
 </div>
 
@@ -61,7 +77,6 @@
     <table class="table table-bordered table-hover align-middle mb-0"
             style="font-size: 0.82rem; white-space: nowrap;">
         <thead>
-            
                 <th>OF</th>
                 <th>Nº</th>
                 <th>Origen</th>
@@ -71,7 +86,9 @@
                 <th>Conductor</th>
                 <th>Teléfono</th>
                 <th title="Fecha Consumo MG">Fecha Consumo</th>
+                <th title="Hora estida consumo Línea 1">H.E.C L1</th>
                 <th title="Hora Real Consumo Línea 1">H.R.C L1</th>
+                <th title="Hora estida consumo Línea 2">H.E.C L2</th>
                 <th title="Hora Real Consumo Línea 2">H.R.C L2</th>
                 <th title="Food and Drug Administration">FDA</th>
                 <th title="GlobalGAP">GAP</th>
@@ -107,7 +124,9 @@
                     <td>{{ $cisterna->Conductor }}</td>
                     <td>{{ $cisterna->Telefono ?: '—' }}</td>
                     <td>{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}</td>
+                    <td>{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '—' }}</td>
                     <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '—' }}</td>
+                    <td>{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '—' }}</td>
                     <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '—' }}</td>
                     <td>
                         @if($cisterna->FDA === true)

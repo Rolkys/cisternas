@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/users/{user}', [AdminController::class, 'destroy'])->name('users.destroy');
     });
 
+    // TODO: Eliminar esta ruta después de la migración o cuando ya no sea necesaria
+Route::delete('cisternas/destroy-all', [CisternaController::class, 'destroyAll'])->name('cisterna.destroyAll');
     Route::delete('/cisterna/borrar-todas', [CisternaController::class, 'destroyAll'])->name('cisterna.destroyAll');
     Route::get('/cisterna/bulk-upload',   [CisternaController::class, 'bulkUpload'])->name('cisterna.bulk');
     Route::post('/cisterna/bulk-upload',  [CisternaController::class, 'bulkStore'])->name('cisterna.bulk.store');
