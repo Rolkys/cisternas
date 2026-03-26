@@ -61,7 +61,7 @@
     <table class="table table-bordered table-hover align-middle mb-0"
             style="font-size: 0.82rem; white-space: nowrap;">
         <thead>
-            户
+            
                 <th>OF</th>
                 <th>Nº</th>
                 <th>Origen</th>
