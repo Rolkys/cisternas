@@ -120,7 +120,7 @@
                         @if(auth()->user()->isAdmin())
                             <td>
                                 <a href="{{ route('planificacion.edit', $fila['id']) }}"
-                                   class="btn btn-sm btn-outline-primary">
+                                   class="btn btn-sm btn-outline-warning">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <form method="POST"

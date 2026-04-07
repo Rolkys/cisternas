@@ -21,11 +21,12 @@
         <form id="import-all-form" method="POST" action="{{ route('cisterna.bulk.confirm.store') }}" class="d-none">
             @csrf
             <input type="hidden" name="import_all" value="1">
-            <input type="hidden" name="edited_rows_json" id="edited_rows_json" value="">
+            <input type="hidden" name="edited_rows_json" id="edited_rows_json_all" value="">
         </form>
 
         <form id="bulk-edit-form" method="POST" action="{{ route('cisterna.bulk.confirm.store') }}">
             @csrf
+            <input type="hidden" name="edited_rows_json" id="edited_rows_json_selected" value="">
 
             <div class="mb-3 d-flex gap-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary"
@@ -297,10 +298,17 @@ function collectRowsData() {
 }
 
 function submitImportAll() {
-    const hidden = document.getElementById('edited_rows_json');
+    const hidden = document.getElementById('edited_rows_json_all');
     hidden.value = JSON.stringify(collectRowsData());
     document.getElementById('import-all-form').submit();
 }
+
+document.getElementById('bulk-edit-form')?.addEventListener('submit', function () {
+    const hidden = document.getElementById('edited_rows_json_selected');
+    if (hidden) {
+        hidden.value = JSON.stringify(collectRowsData());
+    }
+});
 </script>
 @endsection
 

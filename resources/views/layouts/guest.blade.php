@@ -14,6 +14,11 @@
 </head>
 {{-- IV: Color de fondo pantalla login: #F7F5F2 --}}
 <body class="login-page">
+    <div class="position-fixed top-0 end-0 m-3" style="z-index: 1050;">
+        <button type="button" id="theme-toggle" class="btn btn-sm btn-ghost btn-theme-toggle" aria-label="Cambiar tema">
+            <i id="theme-toggle-icon" class="bi bi-moon-stars-fill"></i>
+        </button>
+    </div>
 
     <div class="min-vh-100 d-flex align-items-center justify-content-center">
         <div class="w-100" style="max-width: 400px; padding: 1rem;">

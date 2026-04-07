@@ -37,19 +37,19 @@
                         <td>{{ $u->is_active ? 'SI' : 'NO' }}</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a class="btn btn-outline-info btn-sm" href="{{ route('admin.users.show', $u) }}">
-                                    Ver
+                                <a class="btn btn-outline-view btn-sm" href="{{ route('admin.users.show', $u) }}">
+                                    <i class="bi bi-eye"></i> Ver
                                 </a>
 
                                 <a class="btn btn-outline-warning btn-sm" href="{{ route('admin.users.edit', $u) }}">
-                                    Editar
+                                    <i class="bi bi-pencil"></i> Editar
                                 </a>
 
                                 <form method="POST" action="{{ route('admin.users.destroy', $u) }}" onsubmit="return confirm('¿Seguro que quieres eliminar este usuario?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger btn-sm">
-                                        Eliminar
+                                        <i class="bi bi-trash"></i> Eliminar
                                     </button>
                                 </form>
                             </div>
@@ -61,4 +61,3 @@
     </div>
 </div>
 @endsection
-

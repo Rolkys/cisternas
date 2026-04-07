@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  DOC: Proyecto Cisternas
  Archivo personalizado para comportamiento/estilos especificos de la app.
 */
@@ -54,6 +54,44 @@ function abrirModal(id, hecL1, hrcL1, hecL2, hrcL2) {
  * Configura mutex de campos de hora y utilidades de interfaz.
  */
 document.addEventListener('DOMContentLoaded', function () {
+    /* Tema claro/oscuro */
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-toggle-icon');
+    const storageKey = 'app-theme';
+
+    function applyTheme(theme) {
+        const isDark = theme === 'dark';
+        document.body.classList.toggle('dark-mode', isDark);
+
+        if (themeIcon) {
+            themeIcon.classList.remove('bi-moon-stars-fill', 'bi-sun-fill');
+            themeIcon.classList.add(isDark ? 'bi-sun-fill' : 'bi-moon-stars-fill');
+        }
+
+        if (themeToggle) {
+            themeToggle.setAttribute(
+                'aria-label',
+                isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'
+            );
+            themeToggle.setAttribute(
+                'title',
+                isDark ? 'Modo oscuro activo' : 'Modo claro activo'
+            );
+        }
+    }
+
+    const savedTheme = localStorage.getItem(storageKey);
+    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+            const isDark = document.body.classList.contains('dark-mode');
+            const nextTheme = isDark ? 'light' : 'dark';
+            localStorage.setItem(storageKey, nextTheme);
+            applyTheme(nextTheme);
+        });
+    }
+
     const l1 = document.getElementById('hrc-l1');
     const l2 = document.getElementById('hrc-l2');
 
@@ -77,11 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* Toggle visibilidad contraseñass (login) */
-    /**
-     * Alterna la visibilidad del input de contraseñass en login.
-     * Tambien actualiza el icono del ojo.
-     */
+    /* Toggle visibilidad contrasenas (login) */
     window.togglePassword = function () {
         const input = document.getElementById('password');
         const icon = document.getElementById('eye-icon');
@@ -96,11 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    /* Generador de contraseÃ±a (admin/users) */
-    /**
-     * Genera una contraseÃ±a desde el email con la regla:
-     * LOCALPART en mayusculas + ASCII primera letra + ASCII ultima letra.
-     */
+    /* Generador de contrasena (admin/users) */
     window.generarPassword = function () {
         const emailEl = document.getElementById('email');
         const passEl = document.getElementById('password_generada');
@@ -153,10 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* Seleccionar / deseleccionar todos (bulk_confirm) */
-    /**
-     * Marca o desmarca todos los checkboxes de filas en bulk confirm.
-     * @param {boolean} estado Estado deseado para todos los checkboxes.
-     */
     window.toggleTodos = function (estado) {
         document.querySelectorAll('.check-fila').forEach(function (cb) {
             cb.checked = !!estado;
@@ -164,12 +190,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     /* Mutex H.E.C / H.R.C en edit.blade.php */
-    /**
-     * Aplica bloqueo mutuo entre dos campos de hora.
-     * Si uno tiene valor, el otro se deshabilita.
-     * @param {string} idA ID del primer input.
-     * @param {string} idB ID del segundo input.
-     */
     function setupMutex(idA, idB) {
         const a = document.getElementById(idA);
         const b = document.getElementById(idB);
@@ -203,4 +223,3 @@ document.addEventListener('DOMContentLoaded', function () {
     setupMutex('HoraEstimadaConsumoL1', 'HoraEstimadaConsumoL2');
     setupMutex('HoraRealConsumoL1', 'HoraRealConsumoL2');
 });
-

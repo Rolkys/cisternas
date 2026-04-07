@@ -21,35 +21,46 @@ class CisternaController extends Controller
     public function index(Request $request)
     {
         $query = Cisterna::query();
+        $year = $request->input('year');
 
-        // Filtro automático por año: muestra el año actual + diciembre del año anterior
-        $añoActual = now()->year;
-        $query->where(function($q) use ($añoActual) {
-            $q->whereYear('FechaConsumoMG', $añoActual)
-            ->orWhere(function($q2) use ($añoActual) {
-                $q2->whereYear('FechaConsumoMG', $añoActual - 1)
-                    ->whereMonth('FechaConsumoMG', 12);
-            })
-            // CAMBIO 1: También incluir por FechaEntradaMG si no hay FechaConsumoMG
-            ->orWhere(function($q3) use ($añoActual) {
-                $q3->whereNull('FechaConsumoMG')
-                    ->whereYear('FechaEntradaMG', $añoActual);
-            })
-            ->orWhere(function($q4) use ($añoActual) {
-                $q4->whereNull('FechaConsumoMG')
-                    ->whereYear('FechaEntradaMG', $añoActual - 1)
-                    ->whereMonth('FechaEntradaMG', 12);
-            })
-            ->orWhere(function($q5) use ($añoActual) {
-                $q5->whereNull('FechaConsumoMG')
-                    ->whereNull('FechaEntradaMG');
+        if ($request->filled('year')) {
+            $query->where(function ($q) use ($year) {
+                $q->whereYear('FechaConsumoMG', $year)
+                    ->orWhere(function ($q2) use ($year) {
+                        $q2->whereNull('FechaConsumoMG')
+                            ->whereYear('FechaEntradaMG', $year);
+                    });
             });
-        });
+        } else {
+            // Filtro automatico por year: muestra el year actual + diciembre del year anterior
+            $yearActual = now()->year;
+            $query->where(function ($q) use ($yearActual) {
+                $q->whereYear('FechaConsumoMG', $yearActual)
+                    ->orWhere(function ($q2) use ($yearActual) {
+                        $q2->whereYear('FechaConsumoMG', $yearActual - 1)
+                            ->whereMonth('FechaConsumoMG', 12);
+                    })
+                    // Tambien incluir por FechaEntradaMG si no hay FechaConsumoMG
+                    ->orWhere(function ($q3) use ($yearActual) {
+                        $q3->whereNull('FechaConsumoMG')
+                            ->whereYear('FechaEntradaMG', $yearActual);
+                    })
+                    ->orWhere(function ($q4) use ($yearActual) {
+                        $q4->whereNull('FechaConsumoMG')
+                            ->whereYear('FechaEntradaMG', $yearActual - 1)
+                            ->whereMonth('FechaEntradaMG', 12);
+                    })
+                    ->orWhere(function ($q5) {
+                        $q5->whereNull('FechaConsumoMG')
+                            ->whereNull('FechaEntradaMG');
+                    });
+            });
+        }
 
         // Filtro por texto
-        if($request->filled('texto')){
+        if ($request->filled('texto')) {
             $texto = $request->texto;
-            $query->where(function($q) use ($texto) {
+            $query->where(function ($q) use ($texto) {
                 $q->where('conductor', 'like', "%$texto%")
                     ->orWhere('MatriculaCisterna', 'LIKE', "%{$texto}%")
                     ->orWhere('origen', 'like', "%$texto%")
@@ -57,14 +68,14 @@ class CisternaController extends Controller
             });
         }
 
-        // Filtro por fecha de consumo (también busca en FechaEntradaMG si no hay FechaConsumoMG)
-        if($request->filled('fecha')){
-            $query->where(function($q) use ($request) {
+        // Filtro por fecha de consumo (tambien busca en FechaEntradaMG si no hay FechaConsumoMG)
+        if ($request->filled('fecha')) {
+            $query->where(function ($q) use ($request) {
                 $q->whereDate('FechaConsumoMG', $request->fecha)
-                  ->orWhere(function($q2) use ($request) {
-                      $q2->whereNull('FechaConsumoMG')
-                         ->whereDate('FechaEntradaMG', $request->fecha);
-                  });
+                    ->orWhere(function ($q2) use ($request) {
+                        $q2->whereNull('FechaConsumoMG')
+                            ->whereDate('FechaEntradaMG', $request->fecha);
+                    });
             });
         }
 
@@ -72,7 +83,6 @@ class CisternaController extends Controller
 
         return view('cisterna.index', compact('cisternas'));
     }
-
     // ==================== CREATE ====================
     /**
      * Muestra el formulario para crear un nuevo registro.
@@ -352,7 +362,7 @@ class CisternaController extends Controller
         $fullPath = storage_path('app/private/' . $path);
 
         $service = new \App\Services\ExcelImportService();
-        $preview = $service->preview($fullPath, false);
+        $preview = $service->preview($fullPath, true);
 
         session([
             'bulk_preview'  => $preview,
@@ -397,6 +407,8 @@ class CisternaController extends Controller
         $tempPath = session('bulk_tempPath');
         $filas    = $request->input('filas', []);
         $previewSession = session('bulk_preview', []);
+        $isImportAll = $request->boolean('import_all');
+        $hasEditedRowsJson = $request->filled('edited_rows_json');
  
         $imported = 0;
         $omitidos = 0;
@@ -404,8 +416,12 @@ class CisternaController extends Controller
 
         // Evita límites de max_input_vars en formularios grandes:
         // si se pulsa "importar todas", se lee directamente el Excel temporal.
-        $postTruncado = !empty($previewSession) && count($filas) > 0 && count($filas) < count($previewSession);
-        if ($request->boolean('import_all') || $postTruncado) {
+        $postTruncado = !empty($previewSession)
+            && (
+                (count($filas) > 0 && count($filas) < count($previewSession))
+                || ($hasEditedRowsJson && count($filas) !== count($previewSession))
+            );
+        if ($isImportAll || $postTruncado) {
             if (!$tempPath) {
                 return redirect()->route('cisterna.bulk')
                     ->with('error', 'No hay archivo temporal para importar.');
@@ -413,23 +429,28 @@ class CisternaController extends Controller
 
             $fullPath = storage_path('app/private/' . $tempPath);
             $service = new \App\Services\ExcelImportService();
-            $preview = $service->preview($fullPath, false);
+            $preview = $service->preview($fullPath, true);
             $editedRows = json_decode((string) $request->input('edited_rows_json', '[]'), true);
             if (!is_array($editedRows)) {
                 $editedRows = [];
             }
 
             foreach ($preview as $index => $fila) {
-                if (!empty($fila['_error'])) {
-                    $omitidos++;
-                    continue;
-                }
-
                 $filaEditada = $fila;
                 if (isset($editedRows[(string) $index]) && is_array($editedRows[(string) $index])) {
                     $filaEditada = array_merge($filaEditada, $editedRows[(string) $index]);
                 } elseif (isset($editedRows[$index]) && is_array($editedRows[$index])) {
                     $filaEditada = array_merge($filaEditada, $editedRows[$index]);
+                }
+
+                if (!$isImportAll && empty($filaEditada['_incluir'])) {
+                    $omitidos++;
+                    continue;
+                }
+
+                if (!empty($filaEditada['_error'])) {
+                    $omitidos++;
+                    continue;
                 }
 
                 $data = collect($filaEditada)->except(['_incluir', '_hoja', '_error'])->toArray();
@@ -441,16 +462,29 @@ class CisternaController extends Controller
                     $data['Observaciones'] = null;
                 }
 
+                // En importacion, conservar H.E.C si el usuario la edita en bulk-confirm.
+                if (array_key_exists('HoraEstimadaConsumoL1', $data) && trim((string) $data['HoraEstimadaConsumoL1']) === '') {
+                    $data['HoraEstimadaConsumoL1'] = null;
+                }
+                if (array_key_exists('HoraEstimadaConsumoL2', $data) && trim((string) $data['HoraEstimadaConsumoL2']) === '') {
+                    $data['HoraEstimadaConsumoL2'] = null;
+                }
+                $data = $this->marcarConsumidaSiTamariteEnImport($data);
+
                 $data = $this->syncFechasConsumoEntrada($data);
-                $data = $this->autoConsumir($data);
+                $data = $this->autoConsumir($data, null, true);
 
                 $existing = Cisterna::where('OF', $data['OF'] ?? null)
                     ->where('NumeroCisterna', $data['NumeroCisterna'] ?? null)
                     ->first();
 
                 if ($existing) {
-                    $existing->update($data);
-                    $actualizados++;
+                    if ($isImportAll) {
+                        $existing->update($data);
+                        $actualizados++;
+                    } else {
+                        $omitidos++;
+                    }
                 } else {
                     Cisterna::create($data);
                     $imported++;
@@ -462,6 +496,12 @@ class CisternaController extends Controller
             }
 
             session()->forget(['bulk_preview', 'bulk_tempPath']);
+
+            if (!$isImportAll) {
+                return redirect()->route('cisterna.index')
+                    ->with('success', "{$imported} cisternas importadas. {$omitidos} omitidas.");
+            }
+
 
             return redirect()->route('cisterna.index')
                 ->with('success', "✅ {$imported} creadas, {$actualizados} actualizadas, {$omitidos} omitidas.");
@@ -492,8 +532,17 @@ class CisternaController extends Controller
                 $data['Observaciones'] = null;
             }
 
+            // En importacion, conservar H.E.C si el usuario la edita en bulk-confirm.
+            if (array_key_exists('HoraEstimadaConsumoL1', $data) && trim((string) $data['HoraEstimadaConsumoL1']) === '') {
+                $data['HoraEstimadaConsumoL1'] = null;
+            }
+            if (array_key_exists('HoraEstimadaConsumoL2', $data) && trim((string) $data['HoraEstimadaConsumoL2']) === '') {
+                $data['HoraEstimadaConsumoL2'] = null;
+            }
+            $data = $this->marcarConsumidaSiTamariteEnImport($data);
+
             $data = $this->syncFechasConsumoEntrada($data);
-            $data = $this->autoConsumir($data);
+            $data = $this->autoConsumir($data, null, true);
 
             Cisterna::create($data);
             $imported++;
@@ -621,9 +670,14 @@ class CisternaController extends Controller
     /**
      * Completa automaticamente horas de consumo segun reglas de negocio.
      */
-    private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
+    private function autoConsumir(array $data, ?Cisterna $cisterna = null, bool $isImport = false): array
     {
-        $destino = trim(strtolower($data['Destino'] ?? ''));
+        // En importacion no autocompletar horas desde ningun origen.
+        if ($isImport) {
+            return $data;
+        }
+
+        $destino = trim(strtolower((string) ($data['Destino'] ?? '')));
 
         $esMovatalla = str_contains($destino, 'moratalla') || $destino === '';
 
@@ -656,6 +710,28 @@ class CisternaController extends Controller
                 }
             }
         }
+
+        return $data;
+    }
+
+    /**
+     * En importacion, si destino es TAMARITE DE LITERA se marca como consumida.
+     */
+    private function marcarConsumidaSiTamariteEnImport(array $data): array
+    {
+        $destino = (string) ($data['Destino'] ?? '');
+        if (stripos($destino, 'tamarite de litera') === false) {
+            return $data;
+        }
+
+        $fechaBase = !empty($data['FechaConsumoMG'])
+            ? \Carbon\Carbon::parse($data['FechaConsumoMG'])->format('Y-m-d')
+            : (!empty($data['FechaEntradaMG'])
+                ? \Carbon\Carbon::parse($data['FechaEntradaMG'])->format('Y-m-d')
+                : now()->format('Y-m-d'));
+
+        $data['HoraRealConsumoL1'] = $fechaBase . ' ' . now()->format('H:i') . ':00';
+        $data['HoraRealConsumoL2'] = null;
 
         return $data;
     }

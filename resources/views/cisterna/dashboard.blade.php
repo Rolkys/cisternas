@@ -79,14 +79,6 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2">
-        <div class="card text-center shadow-sm h-100" style="border-left: 4px solid #adb5bd;">
-            <div class="card-body">
-                <div class="fs-1 fw-bold text-secondary">{{ $en_transito }}</div>
-                <div class="text-muted small">En tránsito</div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="row g-3">
@@ -100,7 +92,6 @@
             <div class="card-body p-0">
                 <table class="table table-sm table-hover align-middle mb-0">
                     <thead style="background:#0f2130; color:#fff;">
-                        70e
                             <th>OF</th>
                             <th>Nº</th>
                             <th>Conductor</th>

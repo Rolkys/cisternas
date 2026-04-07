@@ -24,6 +24,9 @@
             </a>
 
             <div class="ms-auto d-flex align-items-center gap-3">
+                <button type="button" id="theme-toggle" class="btn btn-sm btn-ghost btn-theme-toggle text-white" aria-label="Cambiar tema">
+                    <i id="theme-toggle-icon" class="bi bi-moon-stars-fill"></i>
+                </button>
                 @auth
                     <span class="text-white small">{{ auth()->user()->email }}</span>
                     <span class="badge bg-secondary">{{ auth()->user()->role }}</span>

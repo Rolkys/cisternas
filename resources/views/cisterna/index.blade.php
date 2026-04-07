@@ -1,4 +1,4 @@
-{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
+﻿{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
 @section('content')
@@ -125,10 +125,10 @@
                     <td>{{ $cisterna->Conductor }}</td>
                     <td>{{ $cisterna->Telefono ?: '—' }}</td>
                     <td>{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}</td>
-                    <td>{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '—' }}</td>
-                    <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '—' }}</td>
-                    <td>{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '—' }}</td>
-                    <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '—' }}</td>
+                    <td>{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '--' }}</td>
+                    <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '--' }}</td>
+                    <td>{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '--' }}</td>
+                    <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '--' }}</td>
                     <td>
                         @if($cisterna->FDA === true)
                             <span class="badge bg-success">Sí</span>
