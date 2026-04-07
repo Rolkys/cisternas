@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * DOC: Proyecto Cisternas
+ * Archivo personalizado del dominio de negocio.
+ * Contiene logica especifica de gestion de cisternas/usuarios/planificacion.
+ */
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -9,12 +15,18 @@ class PlanificacionController extends Controller
     // Ruta del archivo JSON
     private string $jsonPath;
 
+    /**
+     * Inicializa propiedades y dependencias del componente.
+     */
     public function __construct()
     {
         $this->jsonPath = storage_path('app/planificacion.json');
     }
 
     // ==================== HELPERS JSON ====================
+    /**
+     * Lee y devuelve las filas guardadas en el JSON de planificacion.
+     */
     private function leer(): array
     {
         if (!file_exists($this->jsonPath)) return [];
@@ -22,12 +34,18 @@ class PlanificacionController extends Controller
         return json_decode($contenido, true) ?? [];
     }
 
+    /**
+     * Guarda en disco las filas de planificacion en formato JSON.
+     */
     private function guardar(array $filas): void
     {
         file_put_contents($this->jsonPath, json_encode($filas, JSON_PRETTY_PRINT));
     }
 
     // ==================== INDEX ====================
+    /**
+     * Muestra el listado principal de registros.
+     */
     public function index()
     {
         $filas = $this->leer();
@@ -35,6 +53,9 @@ class PlanificacionController extends Controller
     }
 
     // ==================== STORE ====================
+    /**
+     * Valida la solicitud y crea un nuevo registro.
+     */
     public function store(Request $request)
     {
         $this->soloAdmin();
@@ -66,6 +87,9 @@ class PlanificacionController extends Controller
     }
 
     // ==================== EDIT ====================
+    /**
+     * Muestra el formulario para editar un registro.
+     */
     public function edit(string $id)
     {
         $this->soloAdmin();
@@ -76,6 +100,9 @@ class PlanificacionController extends Controller
     }
 
     // ==================== UPDATE ====================
+    /**
+     * Valida la solicitud y actualiza un registro existente.
+     */
     public function update(Request $request, string $id)
     {
         $this->soloAdmin();
@@ -112,6 +139,9 @@ class PlanificacionController extends Controller
     }
 
     // ==================== DESTROY ====================
+    /**
+     * Elimina un registro del sistema.
+     */
     public function destroy(string $id)
     {
         $this->soloAdmin();
@@ -123,6 +153,9 @@ class PlanificacionController extends Controller
     }
 
     // ==================== LIMPIAR TODO ====================
+    /**
+     * Limpia todos los datos de planificacion almacenados.
+     */
     public function clear()
     {
         $this->soloAdmin();
@@ -132,6 +165,9 @@ class PlanificacionController extends Controller
     }
 
     // ==================== EXPORTAR ====================
+    /**
+     * Genera y descarga el Excel de planificacion.
+     */
     public function exportar()
     {
         $filas = $this->leer();
@@ -188,6 +224,9 @@ class PlanificacionController extends Controller
     }
 
     // ==================== HELPER ====================
+    /**
+     * Verifica que el usuario autenticado tenga permisos de administrador.
+     */
     private function soloAdmin()
     {
         if (!auth()->user()->isAdmin()) {

@@ -1,3 +1,4 @@
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
 @section('content')
@@ -35,7 +36,7 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Contrasena generada</label>
+                <label class="form-label">Contraseñass generada</label>
                 <div class="input-group">
                     <input
                         type="password"
@@ -81,7 +82,7 @@ const btnCrear = document.getElementById('btn-crear');
 btnGenerar.addEventListener('click', function () {
     const pass = generarPasswordDesdeEmail(emailInput.value.trim());
     if (!pass) {
-        alert('Introduce un email valido antes de generar la contrasena.');
+        alert('Introduce un email valido antes de generar la contraseñass.');
         return;
     }
 
@@ -109,3 +110,5 @@ if (passwordInput.value) {
 }
 </script>
 @endsection
+
+

@@ -1,3 +1,4 @@
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
 @section('content')
@@ -6,7 +7,7 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="mb-0">➕ Nueva Cisterna</h4>
+                    <h4 class="mb-0">Nueva Cisterna</h4>
                 </div>
 
                 <div class="card-body">
@@ -25,8 +26,8 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label for="NumeroCisterna" class="form-label">Número Cisterna *</label>
-                                <input type="number" class="form-control @error('NumeroCisterna') is-invalid @enderror" 
+                                <label for="NumeroCisterna" class="form-label">Numero Cisterna *</label>
+                                <input type="number" class="form-control @error('NumeroCisterna') is-invalid @enderror"
                                         id="NumeroCisterna" name="NumeroCisterna" value="{{ old('NumeroCisterna') }}" required>
                                 @error('NumeroCisterna')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -37,7 +38,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="Conductor" class="form-label">Conductor *</label>
-                                <input type="text" class="form-control @error('Conductor') is-invalid @enderror" 
+                                <input type="text" class="form-control @error('Conductor') is-invalid @enderror"
                                        id="Conductor" name="Conductor" value="{{ old('Conductor') }}" required>
                                 @error('Conductor')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -45,8 +46,8 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="Matricula" class="form-label">Matrícula</label>
-                                <input type="text" class="form-control @error('Matricula') is-invalid @enderror" 
+                                <label for="Matricula" class="form-label">Matricula</label>
+                                <input type="text" class="form-control @error('Matricula') is-invalid @enderror"
                                        id="Matricula" name="Matricula" value="{{ old('Matricula') }}">
                                 @error('Matricula')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -56,8 +57,8 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="MatriculaCisterna" class="form-label">Matrícula Cisterna</label>
-                                <input type="text" class="form-control @error('MatriculaCisterna') is-invalid @enderror" 
+                                <label for="MatriculaCisterna" class="form-label">Matricula Cisterna</label>
+                                <input type="text" class="form-control @error('MatriculaCisterna') is-invalid @enderror"
                                        id="MatriculaCisterna" name="MatriculaCisterna" value="{{ old('MatriculaCisterna') }}">
                                 @error('MatriculaCisterna')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -65,8 +66,8 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="Telefono" class="form-label">Teléfono</label>
-                                <input type="text" class="form-control @error('Telefono') is-invalid @enderror" 
+                                <label for="Telefono" class="form-label">Telefono</label>
+                                <input type="text" class="form-control @error('Telefono') is-invalid @enderror"
                                        id="Telefono" name="Telefono" value="{{ old('Telefono') }}">
                                 @error('Telefono')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -77,7 +78,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="Origen" class="form-label">Origen</label>
-                                <input type="text" class="form-control @error('Origen') is-invalid @enderror" 
+                                <input type="text" class="form-control @error('Origen') is-invalid @enderror"
                                        id="Origen" name="Origen" value="{{ old('Origen') }}">
                                 @error('Origen')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -86,7 +87,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="Destino" class="form-label">Destino</label>
-                                <input type="text" class="form-control @error('Destino') is-invalid @enderror" 
+                                <input type="text" class="form-control @error('Destino') is-invalid @enderror"
                                        id="Destino" name="Destino" value="{{ old('Destino') }}">
                                 @error('Destino')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -97,7 +98,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="Transporte" class="form-label">Transporte</label>
-                                <input type="text" class="form-control @error('Transporte') is-invalid @enderror" 
+                                <input type="text" class="form-control @error('Transporte') is-invalid @enderror"
                                        id="Transporte" name="Transporte" value="{{ old('Transporte') }}">
                                 @error('Transporte')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -106,7 +107,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <label for="FechaConsumoMG" class="form-label">Fecha Consumo MG</label>
-                                <input type="date" class="form-control @error('FechaConsumoMG') is-invalid @enderror" 
+                                <input type="date" class="form-control @error('FechaConsumoMG') is-invalid @enderror"
                                        id="FechaConsumoMG" name="FechaConsumoMG" value="{{ old('FechaConsumoMG') }}">
                                 @error('FechaConsumoMG')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -116,37 +117,8 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="FechaFabricacionHuelva" class="form-label">Fecha Fabricación Huelva</label>
-                                <input type="date" class="form-control @error('FechaFabricacionHuelva') is-invalid @enderror" 
-                                       id="FechaFabricacionHuelva" name="FechaFabricacionHuelva" value="{{ old('FechaFabricacionHuelva') }}">
-                                @error('FechaFabricacionHuelva')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="HoraSalida" class="form-label">Hora Salida</label>
-                                <input type="datetime-local" class="form-control @error('HoraSalida') is-invalid @enderror" 
-                                       id="HoraSalida" name="HoraSalida" value="{{ old('HoraSalida') }}">
-                                @error('HoraSalida')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="FechaEntradaMG" class="form-label">Fecha Entrada MG</label>
-                                <input type="date" class="form-control @error('FechaEntradaMG') is-invalid @enderror" 
-                                       id="FechaEntradaMG" name="FechaEntradaMG" value="{{ old('FechaEntradaMG') }}">
-                                @error('FechaEntradaMG')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="col-md-6 mb-3">
                                 <label for="Incidencias" class="form-label">Incidencias</label>
-                                <textarea class="form-control @error('Incidencias') is-invalid @enderror" 
+                                <textarea class="form-control @error('Incidencias') is-invalid @enderror"
                                           id="Incidencias" name="Incidencias" rows="2">{{ old('Incidencias') }}</textarea>
                                 @error('Incidencias')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -157,7 +129,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="GlobalGAP" name="GlobalGAP" value="1" 
+                                    <input type="checkbox" class="form-check-input" id="GlobalGAP" name="GlobalGAP" value="1"
                                            {{ old('GlobalGAP') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="GlobalGAP">Global GAP</label>
                                 </div>
@@ -165,7 +137,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="FDA" name="FDA" value="1" 
+                                    <input type="checkbox" class="form-check-input" id="FDA" name="FDA" value="1"
                                            {{ old('FDA') ? 'checked' : '' }}>
                                     <label class="form-check-label" for="FDA">FDA</label>
                                 </div>
@@ -175,7 +147,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label for="Observaciones" class="form-label">Observaciones</label>
-                                <textarea class="form-control @error('Observaciones') is-invalid @enderror" 
+                                <textarea class="form-control @error('Observaciones') is-invalid @enderror"
                                           id="Observaciones" name="Observaciones" rows="3">{{ old('Observaciones') }}</textarea>
                                 @error('Observaciones')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -184,12 +156,8 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-4">
-                            <a href="{{ route('cisterna.index') }}" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Cancelar
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Guardar Cisterna
-                            </button>
+                            <a href="{{ route('cisterna.index') }}" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">Guardar Cisterna</button>
                         </div>
                     </form>
                 </div>
@@ -198,3 +166,4 @@
     </div>
 </div>
 @endsection
+

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * DOC: Proyecto Cisternas
+ * Archivo personalizado del dominio de negocio.
+ * Contiene logica especifica de gestion de cisternas/usuarios/planificacion.
+ */
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -33,11 +39,14 @@ class Cisterna extends Model
         'Incidencias'
     ];
 
+    /**
+     * Define los casts automaticos de atributos del modelo.
+     */
     protected function casts(): array
     {
         return [
             // Fechas/horas
-            'FechaFabricacionHuelba'    => 'datetime',
+            'FechaFabricacionHuelva'    => 'datetime',
             'HoraSalida'                => 'datetime',
             'FechaEntradaMG'            => 'datetime',
             'HoraLlegadaEstimada'       => 'datetime',
@@ -53,3 +62,4 @@ class Cisterna extends Model
         ];
     }
 }
+

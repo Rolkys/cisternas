@@ -1,3 +1,4 @@
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
 @section('content')
@@ -18,7 +19,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Contrasena</label>
+            <label class="form-label">Contraseña</label>
             <div class="input-group">
                 <input type="password" id="generated_password" class="form-control" value="{{ $generatedPassword }}" readonly>
                 <button type="button" id="btn-toggle-password" class="btn btn-outline-secondary">Ver</button>
@@ -51,3 +52,5 @@ btnTogglePwd.addEventListener('click', function () {
 });
 </script>
 @endsection
+
+

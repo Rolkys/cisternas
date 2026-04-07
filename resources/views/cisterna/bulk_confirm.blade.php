@@ -1,3 +1,4 @@
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
 @section('content')
@@ -17,7 +18,13 @@
             Revisa y edita los datos antes de importar. Marca con el checkbox las que quieres incluir.
         </p>
 
-        <form method="POST" action="{{ route('cisterna.bulk.confirm.store') }}">
+        <form id="import-all-form" method="POST" action="{{ route('cisterna.bulk.confirm.store') }}" class="d-none">
+            @csrf
+            <input type="hidden" name="import_all" value="1">
+            <input type="hidden" name="edited_rows_json" id="edited_rows_json" value="">
+        </form>
+
+        <form id="bulk-edit-form" method="POST" action="{{ route('cisterna.bulk.confirm.store') }}">
             @csrf
 
             <div class="mb-3 d-flex gap-2">
@@ -43,7 +50,6 @@
                             <th>Matrícula Cisterna</th>
                             <th>Transporte</th>
                             <th>Teléfono</th>
-                            <th>Fecha Salida</th>
                             <th>Fecha Consumo MG</th>
                             <th>Fecha Entrada MG</th>
                             <th title="Hora Estimada Consumo Línea 1">H.E.C L1</th>
@@ -168,17 +174,6 @@
                                             style="min-width:140px">
                                 </td>
 
-                                {{-- HoraSalida --}}
-                                <td>
-                                        <input type="datetime-local"
-                                            name="filas[{{ $i }}][HoraSalida]"
-                                            value="{{ isset($fila['HoraSalida']) && $fila['HoraSalida']
-                                                ? \Carbon\Carbon::parse($fila['HoraSalida'])->format('Y-m-d\TH:i')
-                                                : '' }}"
-                                            class="form-control form-control-sm"
-                                            style="min-width:160px">
-                                </td>
-
                                 {{-- FechaEntradaMG --}}
                                 <td>
                                     <input type="datetime-local"
@@ -259,6 +254,9 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-upload"></i> Importar seleccionadas
                 </button>
+                <button type="button" class="btn btn-success" onclick="submitImportAll()">
+                    <i class="bi bi-check2-all"></i> Importar todas del Excel
+                </button>
                 <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-secondary">
                     Cancelar
                 </a>
@@ -267,4 +265,42 @@
     </div>
 </div>
 @endif
+
+<script>
+function toggleTodos(checked) {
+    document.querySelectorAll('.check-fila').forEach((checkbox) => {
+        checkbox.checked = !!checked;
+    });
+}
+
+function collectRowsData() {
+    const rows = {};
+    const fields = document.querySelectorAll('#bulk-edit-form input[name^="filas["], #bulk-edit-form textarea[name^="filas["], #bulk-edit-form select[name^="filas["]');
+
+    fields.forEach((el) => {
+        const match = el.name.match(/^filas\[(\d+)\]\[([^\]]+)\]$/);
+        if (!match) return;
+
+        const index = match[1];
+        const key = match[2];
+
+        if (!rows[index]) rows[index] = {};
+
+        if (el.type === 'checkbox') {
+            rows[index][key] = el.checked ? '1' : '';
+        } else {
+            rows[index][key] = el.value;
+        }
+    });
+
+    return rows;
+}
+
+function submitImportAll() {
+    const hidden = document.getElementById('edited_rows_json');
+    hidden.value = JSON.stringify(collectRowsData());
+    document.getElementById('import-all-form').submit();
+}
+</script>
 @endsection
+

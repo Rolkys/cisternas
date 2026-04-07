@@ -1,3 +1,4 @@
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
 @section('content')
@@ -60,3 +61,4 @@
     </div>
 </div>
 @endsection
+

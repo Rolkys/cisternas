@@ -1,3 +1,4 @@
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
 @section('content')
@@ -136,35 +137,6 @@
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="FechaFabricacionHuelva" class="form-label">Fecha Fabricación Huelva</label>
-                                    <input type="date" class="form-control @error('FechaFabricacionHuelva') is-invalid @enderror" 
-                                           id="FechaFabricacionHuelva" name="FechaFabricacionHuelva" value="{{ old('FechaFabricacionHuelva', $cisterna->FechaFabricacionHuelva?->format('Y-m-d')) }}">
-                                    @error('FechaFabricacionHuelva')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label for="HoraSalida" class="form-label">Hora Salida</label>
-                                    <input type="datetime-local" class="form-control @error('HoraSalida') is-invalid @enderror" 
-                                           id="HoraSalida" name="HoraSalida" value="{{ old('HoraSalida', $cisterna->HoraSalida?->format('Y-m-d\TH:i')) }}">
-                                    @error('HoraSalida')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="FechaEntradaMG" class="form-label">Fecha Entrada MG</label>
-                                    <input type="date" class="form-control @error('FechaEntradaMG') is-invalid @enderror" 
-                                           id="FechaEntradaMG" name="FechaEntradaMG" value="{{ old('FechaEntradaMG', $cisterna->FechaEntradaMG?->format('Y-m-d')) }}">
-                                    @error('FechaEntradaMG')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6 mb-3">
                                     <label for="Incidencias" class="form-label">Incidencias</label>
                                     <textarea class="form-control @error('Incidencias') is-invalid @enderror" 
                                               id="Incidencias" name="Incidencias" rows="2">{{ old('Incidencias', $cisterna->Incidencias) }}</textarea>
@@ -246,11 +218,7 @@
                                     <input type="text" class="form-control bg-light" value="{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}" disabled>
                                 </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Fecha Entrada MG</label>
-                                    <input type="text" class="form-control bg-light" value="{{ $cisterna->FechaEntradaMG?->format('d/m/Y') ?? '—' }}" disabled>
                                 </div>
-                            </div>
 
                             <hr class="my-4">
                         @endif
@@ -399,3 +367,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
+

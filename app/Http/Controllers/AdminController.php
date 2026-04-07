@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * DOC: Proyecto Cisternas
+ * Archivo personalizado del dominio de negocio.
+ * Contiene logica especifica de gestion de cisternas/usuarios/planificacion.
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -10,6 +16,9 @@ use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
+    /**
+     * Muestra el listado principal de registros.
+     */
     public function index()
     {
         $users = User::orderByDesc('fecha_registro')->get();
@@ -17,6 +26,9 @@ class AdminController extends Controller
         return view('admin.users', compact('users'));
     }
 
+    /**
+     * Muestra el formulario para crear un nuevo registro.
+     */
     public function create()
     {
         $rolesDisponibles = ['Root', 'Administrador', 'Usuario', 'operario'];
@@ -24,6 +36,9 @@ class AdminController extends Controller
         return view('admin.create', compact('rolesDisponibles'));
     }
 
+    /**
+     * Valida la solicitud y crea un nuevo registro.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -35,7 +50,7 @@ class AdminController extends Controller
         $plainPassword = $this->generatePasswordFromEmail($validated['email']);
         if ($validated['password_generada'] !== $plainPassword) {
             return back()
-                ->withErrors(['password_generada' => 'Debes generar la contrasena con el boton antes de crear.'])
+                ->withErrors(['password_generada' => 'Debes generar la contraseñass con el boton antes de crear.'])
                 ->withInput();
         }
 
@@ -55,10 +70,13 @@ class AdminController extends Controller
 
         return redirect()->route('admin.users')->with(
             'success',
-            "Usuario creado correctamente.<br>Contrasena generada: <b>{$plainPassword}</b>"
+            "Usuario creado correctamente.<br>Contraseñass generada: <b>{$plainPassword}</b>"
         );
     }
 
+    /**
+     * Activa o desactiva el estado de un registro.
+     */
     public function toggle(User $user)
     {
         if ($user->email === 'root@local.es') {
@@ -75,6 +93,9 @@ class AdminController extends Controller
         return back()->with('success', $message);
     }
 
+    /**
+     * Actualiza el rol asignado al usuario indicado.
+     */
     public function changeRole(Request $request, User $user)
     {
         if ($user->email === 'root@local.es') {
@@ -91,6 +112,9 @@ class AdminController extends Controller
         return back()->with('success', "Rol actualizado a {$validated['role']} para {$user->email}.");
     }
 
+    /**
+     * Elimina un registro del sistema.
+     */
     public function destroy(User $user)
     {
         if ($user->email === 'root@local.es') {
@@ -103,6 +127,9 @@ class AdminController extends Controller
         return back()->with('success', "Usuario {$email} eliminado correctamente.");
     }
 
+    /**
+     * Muestra el formulario para editar un registro.
+     */
     public function edit(User $user)
     {
         $rolesDisponibles = ['Root', 'Administrador', 'Usuario', 'operario'];
@@ -110,6 +137,9 @@ class AdminController extends Controller
         return view('admin.edit', compact('user', 'rolesDisponibles'));
     }
 
+    /**
+     * Muestra el detalle de un registro concreto.
+     */
     public function show(User $user)
     {
         $generatedPassword = $this->generatePasswordFromEmail($user->email);
@@ -118,6 +148,9 @@ class AdminController extends Controller
         return view('admin.show', compact('user', 'generatedPassword', 'capabilities'));
     }
 
+    /**
+     * Valida la solicitud y actualiza un registro existente.
+     */
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
@@ -132,6 +165,9 @@ class AdminController extends Controller
         return redirect()->route('admin.users')->with('success', "Usuario {$user->email} actualizado correctamente.");
     }
 
+    /**
+     * Genera una contraseñass deterministica a partir del email.
+     */
     private function generatePasswordFromEmail(string $email): string
     {
         $localPart = trim(explode('@', $email)[0] ?? '');
@@ -146,6 +182,9 @@ class AdminController extends Controller
         return $upperLocal . ord($firstChar) . ord($lastChar);
     }
 
+    /**
+     * Devuelve los permisos visibles asociados a un rol.
+     */
     private function getRoleCapabilities(string $role): array
     {
         return match ($role) {
@@ -172,3 +211,5 @@ class AdminController extends Controller
         };
     }
 }
+
+

@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * DOC: Proyecto Cisternas
+ * Archivo personalizado del dominio de negocio.
+ * Contiene logica especifica de gestion de cisternas/usuarios/planificacion.
+ */
+
 namespace App\Services;
 
 use App\Models\Cisterna;
@@ -12,6 +18,9 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 class ExcelExportService
 {
 
+    /**
+     * Exporta los datos filtrados a un archivo Excel.
+     */
     public function export($cisternas)
     {
         $spreadsheet = new Spreadsheet();

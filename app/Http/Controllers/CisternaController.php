@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * DOC: Proyecto Cisternas
+ * Archivo personalizado del dominio de negocio.
+ * Contiene logica especifica de gestion de cisternas/usuarios/planificacion.
+ */
+
 namespace App\Http\Controllers;
 
 use App\Models\Cisterna;
@@ -9,6 +15,9 @@ use Illuminate\Support\Facades\Auth;
 class CisternaController extends Controller
 {
     // ==================== INDEX ====================
+    /**
+     * Muestra el listado principal de registros.
+     */
     public function index(Request $request)
     {
         $query = Cisterna::query();
@@ -65,6 +74,9 @@ class CisternaController extends Controller
     }
 
     // ==================== CREATE ====================
+    /**
+     * Muestra el formulario para crear un nuevo registro.
+     */
     public function create()
     {
         $user = Auth::user();
@@ -77,6 +89,9 @@ class CisternaController extends Controller
     }
 
     // ==================== STORE ====================
+    /**
+     * Valida la solicitud y crea un nuevo registro.
+     */
     public function store(Request $request)
     {
         $user = Auth::user();
@@ -96,9 +111,6 @@ class CisternaController extends Controller
             'Telefono'               => 'nullable|string|max:255',
             'Transporte'             => 'nullable|string|max:255',
             'FechaConsumoMG'         => 'nullable|date',
-            'FechaFabricacionHuelva' => 'nullable|date',
-            'HoraSalida'             => 'nullable|date',
-            'FechaEntradaMG'         => 'nullable|date',
             'Observaciones'          => 'nullable|string',
             'Incidencias'            => 'nullable|string',
             'GlobalGAP'              => 'nullable|boolean',
@@ -106,6 +118,7 @@ class CisternaController extends Controller
         ]);
 
         $data = $request->all();
+        $data = $this->syncFechasConsumoEntrada($data);
 
         $data = $this->autoConsumir($data);
 
@@ -116,18 +129,27 @@ class CisternaController extends Controller
     }
 
     // ==================== SHOW ====================
+    /**
+     * Muestra el detalle de un registro concreto.
+     */
     public function show(Cisterna $cisterna)
     {
         return view('cisterna.show', compact('cisterna'));
     }
 
     // ==================== EDIT ====================
+    /**
+     * Muestra el formulario para editar un registro.
+     */
     public function edit(Cisterna $cisterna)
     {
         return view('cisterna.edit', compact('cisterna'));
     }
 
     // ==================== UPDATE ====================
+    /**
+     * Valida la solicitud y actualiza un registro existente.
+     */
     public function update(Request $request, Cisterna $cisterna)
     {
         $user = Auth::user();
@@ -145,9 +167,6 @@ class CisternaController extends Controller
                 'Telefono'       => 'nullable|string|max:20',
                 'Transporte'     => 'nullable|string|max:255',
                 'FechaConsumoMG' => 'nullable|date',
-                'FechaFabricacionHuelva' => 'nullable|date',
-                'HoraSalida'     => 'nullable|date',
-                'FechaEntradaMG' => 'nullable|date',
                 'Observaciones'  => 'nullable|string',
                 'Incidencias'    => 'nullable|string',
                 'GlobalGAP'      => 'nullable|boolean',
@@ -155,6 +174,7 @@ class CisternaController extends Controller
             ]);
 
             $data = $request->all();
+            $data = $this->syncFechasConsumoEntrada($data);
             $data = $this->autoConsumir($data, $cisterna);
             $cisterna->update($data);
 
@@ -175,9 +195,6 @@ class CisternaController extends Controller
                 'Telefono'       => 'nullable|string|max:20',
                 'Transporte'     => 'nullable|string|max:255',
                 'FechaConsumoMG' => 'nullable|date',
-                'FechaFabricacionHuelva' => 'nullable|date',
-                'HoraSalida'     => 'nullable|date',
-                'FechaEntradaMG' => 'nullable|date',
                 'Observaciones'  => 'nullable|string',
                 'Incidencias'    => 'nullable|string',
                 'GlobalGAP'      => 'nullable|boolean',
@@ -185,6 +202,7 @@ class CisternaController extends Controller
             ]);
 
             $data = $request->all();
+            $data = $this->syncFechasConsumoEntrada($data);
             $data = $this->autoConsumir($data, $cisterna);
             $cisterna->update($data);
 
@@ -230,6 +248,9 @@ class CisternaController extends Controller
     }
 
     //==================== DESTROY ====================
+    /**
+     * Elimina un registro del sistema.
+     */
     public function destroy(Cisterna $cisterna)
     {
         $user = Auth::user();
@@ -251,6 +272,9 @@ class CisternaController extends Controller
     }
 
     // ==================== UPDATE CONSUMO MODAL ====================
+    /**
+     * Actualiza los datos de consumo de una cisterna.
+     */
     public function updateConsumo(Request $request, Cisterna $cisterna)
     {
         $user = Auth::user();
@@ -295,6 +319,9 @@ class CisternaController extends Controller
     }
 
     // ==================== BULK UPLOAD ====================
+    /**
+     * Muestra la vista para iniciar una carga masiva.
+     */
     public function bulkUpload()
     {
         $user = Auth::user();
@@ -306,6 +333,9 @@ class CisternaController extends Controller
         return view('cisterna.bulk');
     }
 
+    /**
+     * Valida y guarda temporalmente el archivo de carga masiva.
+     */
     public function bulkStore(Request $request)
     {
         $user = Auth::user();
@@ -322,7 +352,7 @@ class CisternaController extends Controller
         $fullPath = storage_path('app/private/' . $path);
 
         $service = new \App\Services\ExcelImportService();
-        $preview = $service->preview($fullPath);
+        $preview = $service->preview($fullPath, false);
 
         session([
             'bulk_preview'  => $preview,
@@ -332,6 +362,9 @@ class CisternaController extends Controller
         return redirect()->route('cisterna.bulk.confirm');
     }
 
+    /**
+     * Muestra la previsualizacion antes de confirmar la importacion.
+     */
     public function bulkConfirm()
     {
         $user = Auth::user();
@@ -350,6 +383,9 @@ class CisternaController extends Controller
         return view('cisterna.bulk_confirm', compact('preview'));
     }
 
+    /**
+     * Procesa la importacion masiva y guarda los registros confirmados.
+     */
     public function bulkConfirmStore(Request $request)
     {
         $user = Auth::user();
@@ -360,9 +396,76 @@ class CisternaController extends Controller
  
         $tempPath = session('bulk_tempPath');
         $filas    = $request->input('filas', []);
+        $previewSession = session('bulk_preview', []);
  
         $imported = 0;
         $omitidos = 0;
+        $actualizados = 0;
+
+        // Evita límites de max_input_vars en formularios grandes:
+        // si se pulsa "importar todas", se lee directamente el Excel temporal.
+        $postTruncado = !empty($previewSession) && count($filas) > 0 && count($filas) < count($previewSession);
+        if ($request->boolean('import_all') || $postTruncado) {
+            if (!$tempPath) {
+                return redirect()->route('cisterna.bulk')
+                    ->with('error', 'No hay archivo temporal para importar.');
+            }
+
+            $fullPath = storage_path('app/private/' . $tempPath);
+            $service = new \App\Services\ExcelImportService();
+            $preview = $service->preview($fullPath, false);
+            $editedRows = json_decode((string) $request->input('edited_rows_json', '[]'), true);
+            if (!is_array($editedRows)) {
+                $editedRows = [];
+            }
+
+            foreach ($preview as $index => $fila) {
+                if (!empty($fila['_error'])) {
+                    $omitidos++;
+                    continue;
+                }
+
+                $filaEditada = $fila;
+                if (isset($editedRows[(string) $index]) && is_array($editedRows[(string) $index])) {
+                    $filaEditada = array_merge($filaEditada, $editedRows[(string) $index]);
+                } elseif (isset($editedRows[$index]) && is_array($editedRows[$index])) {
+                    $filaEditada = array_merge($filaEditada, $editedRows[$index]);
+                }
+
+                $data = collect($filaEditada)->except(['_incluir', '_hoja', '_error'])->toArray();
+
+                $data['GlobalGAP'] = !empty($filaEditada['GlobalGAP']);
+                $data['FDA'] = !empty($filaEditada['FDA']);
+
+                if (isset($data['Observaciones']) && trim((string) $data['Observaciones']) === '') {
+                    $data['Observaciones'] = null;
+                }
+
+                $data = $this->syncFechasConsumoEntrada($data);
+                $data = $this->autoConsumir($data);
+
+                $existing = Cisterna::where('OF', $data['OF'] ?? null)
+                    ->where('NumeroCisterna', $data['NumeroCisterna'] ?? null)
+                    ->first();
+
+                if ($existing) {
+                    $existing->update($data);
+                    $actualizados++;
+                } else {
+                    Cisterna::create($data);
+                    $imported++;
+                }
+            }
+
+            if ($tempPath) {
+                \Storage::delete($tempPath);
+            }
+
+            session()->forget(['bulk_preview', 'bulk_tempPath']);
+
+            return redirect()->route('cisterna.index')
+                ->with('success', "✅ {$imported} creadas, {$actualizados} actualizadas, {$omitidos} omitidas.");
+        }
  
         foreach ($filas as $fila) {
  
@@ -388,9 +491,10 @@ class CisternaController extends Controller
             if (isset($data['Observaciones']) && trim($data['Observaciones']) === '') {
                 $data['Observaciones'] = null;
             }
- 
+
+            $data = $this->syncFechasConsumoEntrada($data);
             $data = $this->autoConsumir($data);
- 
+
             Cisterna::create($data);
             $imported++;
         }
@@ -406,6 +510,9 @@ class CisternaController extends Controller
     }
 
     // ==================== EXPORTAR EXCEL ====================
+    /**
+     * Exporta los datos filtrados a un archivo Excel.
+     */
     public function export(Request $request)
     {
         $query = Cisterna::query();
@@ -433,6 +540,9 @@ class CisternaController extends Controller
     }
 
     // ==================== DASHBOARD ====================
+    /**
+     * Calcula metricas y datos para el panel de control.
+     */
     public function dashboard(Request $request)
     {
         $desde = $request->filled('desde') ? $request->desde : null;
@@ -508,6 +618,9 @@ class CisternaController extends Controller
     }
 
     // ==================== HELPER: AUTO-CONSUMIR ====================
+    /**
+     * Completa automaticamente horas de consumo segun reglas de negocio.
+     */
     private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
     {
         $destino = trim(strtolower($data['Destino'] ?? ''));
@@ -547,6 +660,20 @@ class CisternaController extends Controller
         return $data;
     }
 
+    /**
+     * Sincroniza FechaEntradaMG para que coincida con FechaConsumoMG.
+     */
+    private function syncFechasConsumoEntrada(array $data): array
+    {
+        $fechaConsumo = $data['FechaConsumoMG'] ?? null;
+        $data['FechaEntradaMG'] = $fechaConsumo ?: null;
+
+        return $data;
+    }
+
+    /**
+     * Elimina de forma masiva todos los registros de cisternas.
+     */
     public function destroyAll()
     {
         if (!auth()->user()->isRoot() && !auth()->user()->isAdmin()) {
@@ -559,3 +686,5 @@ class CisternaController extends Controller
             ->with('success', 'Todas las cisternas han sido eliminadas correctamente.');
     }
 }
+
+
