@@ -462,17 +462,8 @@ class CisternaController extends Controller
                     $data['Observaciones'] = null;
                 }
 
-                // En importacion, conservar H.E.C si el usuario la edita en bulk-confirm.
-                if (array_key_exists('HoraEstimadaConsumoL1', $data) && trim((string) $data['HoraEstimadaConsumoL1']) === '') {
-                    $data['HoraEstimadaConsumoL1'] = null;
-                }
-                if (array_key_exists('HoraEstimadaConsumoL2', $data) && trim((string) $data['HoraEstimadaConsumoL2']) === '') {
-                    $data['HoraEstimadaConsumoL2'] = null;
-                }
-                $data = $this->marcarConsumidaSiTamariteEnImport($data);
-
                 $data = $this->syncFechasConsumoEntrada($data);
-                $data = $this->autoConsumir($data, null, true);
+                $data = $this->autoConsumir($data);
 
                 $existing = Cisterna::where('OF', $data['OF'] ?? null)
                     ->where('NumeroCisterna', $data['NumeroCisterna'] ?? null)
@@ -532,17 +523,8 @@ class CisternaController extends Controller
                 $data['Observaciones'] = null;
             }
 
-            // En importacion, conservar H.E.C si el usuario la edita en bulk-confirm.
-            if (array_key_exists('HoraEstimadaConsumoL1', $data) && trim((string) $data['HoraEstimadaConsumoL1']) === '') {
-                $data['HoraEstimadaConsumoL1'] = null;
-            }
-            if (array_key_exists('HoraEstimadaConsumoL2', $data) && trim((string) $data['HoraEstimadaConsumoL2']) === '') {
-                $data['HoraEstimadaConsumoL2'] = null;
-            }
-            $data = $this->marcarConsumidaSiTamariteEnImport($data);
-
             $data = $this->syncFechasConsumoEntrada($data);
-            $data = $this->autoConsumir($data, null, true);
+            $data = $this->autoConsumir($data);
 
             Cisterna::create($data);
             $imported++;
@@ -670,14 +652,9 @@ class CisternaController extends Controller
     /**
      * Completa automaticamente horas de consumo segun reglas de negocio.
      */
-    private function autoConsumir(array $data, ?Cisterna $cisterna = null, bool $isImport = false): array
+    private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
     {
-        // En importacion no autocompletar horas desde ningun origen.
-        if ($isImport) {
-            return $data;
-        }
-
-        $destino = trim(strtolower((string) ($data['Destino'] ?? '')));
+        $destino = trim(strtolower($data['Destino'] ?? ''));
 
         $esMovatalla = str_contains($destino, 'moratalla') || $destino === '';
 
@@ -710,28 +687,6 @@ class CisternaController extends Controller
                 }
             }
         }
-
-        return $data;
-    }
-
-    /**
-     * En importacion, si destino es TAMARITE DE LITERA se marca como consumida.
-     */
-    private function marcarConsumidaSiTamariteEnImport(array $data): array
-    {
-        $destino = (string) ($data['Destino'] ?? '');
-        if (stripos($destino, 'tamarite de litera') === false) {
-            return $data;
-        }
-
-        $fechaBase = !empty($data['FechaConsumoMG'])
-            ? \Carbon\Carbon::parse($data['FechaConsumoMG'])->format('Y-m-d')
-            : (!empty($data['FechaEntradaMG'])
-                ? \Carbon\Carbon::parse($data['FechaEntradaMG'])->format('Y-m-d')
-                : now()->format('Y-m-d'));
-
-        $data['HoraRealConsumoL1'] = $fechaBase . ' ' . now()->format('H:i') . ':00';
-        $data['HoraRealConsumoL2'] = null;
 
         return $data;
     }
