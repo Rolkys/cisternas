@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function applyTheme(theme) {
         const isDark = theme === 'dark';
+        document.documentElement.classList.toggle('dark-mode', isDark);
         document.body.classList.toggle('dark-mode', isDark);
 
         if (themeIcon) {
@@ -81,7 +82,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     const savedTheme = localStorage.getItem(storageKey);
-    applyTheme(savedTheme === 'dark' ? 'dark' : 'light');
+    const prefersDark = window.matchMedia
+        && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme === 'dark' || savedTheme === 'light'
+        ? savedTheme
+        : (prefersDark ? 'dark' : 'light');
+    applyTheme(initialTheme);
 
     if (themeToggle) {
         themeToggle.addEventListener('click', function () {

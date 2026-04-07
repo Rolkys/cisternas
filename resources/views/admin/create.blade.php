@@ -36,8 +36,8 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Contraseñass generada</label>
-                <div class="input-group">
+                <label class="form-label">ContraseÃ±a generada</label>
+                <div class="input-group"> 
                     <input
                         type="password"
                         id="password_generada"
@@ -82,7 +82,7 @@ const btnCrear = document.getElementById('btn-crear');
 btnGenerar.addEventListener('click', function () {
     const pass = generarPasswordDesdeEmail(emailInput.value.trim());
     if (!pass) {
-        alert('Introduce un email valido antes de generar la contraseñass.');
+        alert('Introduce un email vÃ¡lido antes de generar la contraseÃ±a.');
         return;
     }
 
@@ -110,5 +110,4 @@ if (passwordInput.value) {
 }
 </script>
 @endsection
-
 

@@ -102,14 +102,17 @@
                     </thead>
                     <tbody>
                         @forelse($hoy_cisternas as $c)
-                            <tr class="{{ ($c->HoraRealConsumoL1 || $c->HoraRealConsumoL2) ? 'row-consumida' : ($c->Incidencias ? 'row-incidencia' : 'row-hoy') }}">
+                            @php
+                                $esTamariteHoy = str_contains(strtolower((string) ($c->Destino ?? '')), 'tamarite de litera');
+                            @endphp
+                            <tr class="{{ ($esTamariteHoy || $c->HoraRealConsumoL1 || $c->HoraRealConsumoL2) ? 'row-consumida' : ($c->Incidencias ? 'row-incidencia' : 'row-hoy') }}">
                                 <td>{{ $c->OF }}</td>
                                 <td>{{ str_pad($c->NumeroCisterna, 4, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ $c->Conductor }}</td>
                                 <td>{{ $c->HoraEstimadaConsumoL1?->format('H:i') ?? '—' }}</td>
                                 <td>{{ $c->HoraEstimadaConsumoL2?->format('H:i') ?? '—' }}</td>
                                 <td>
-                                    @if($c->HoraRealConsumoL1 || $c->HoraRealConsumoL2)
+                                    @if($esTamariteHoy || $c->HoraRealConsumoL1 || $c->HoraRealConsumoL2)
                                         <span class="badge bg-success">Consumida</span>
                                     @elseif($c->Incidencias)
                                         <span class="badge bg-danger">Incidencia</span>
@@ -207,11 +210,12 @@
                                 @forelse($cisternasDelAño as $cisterna)
                                     @php
                                         $hoy = now()->startOfDay();
+                                        $esTamarite = str_contains(strtolower((string) ($cisterna->Destino ?? '')), 'tamarite de litera');
                                         $rowClass = '';
-                                        if ($cisterna->Incidencias) {
-                                            $rowClass = 'row-incidencia';
-                                        } elseif ($cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2) {
+                                        if ($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2) {
                                             $rowClass = 'row-consumida';
+                                        } elseif ($cisterna->Incidencias) {
+                                            $rowClass = 'row-incidencia';
                                         } elseif ($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isSameDay($hoy)) {
                                             $rowClass = 'row-hoy';
                                         } elseif ($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isAfter($hoy)) {
@@ -230,10 +234,10 @@
                                         <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '—' }}</td>
                                         <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '—' }}</td>
                                         <td>
-                                            @if($cisterna->Incidencias)
-                                                <span class="badge bg-danger">Incidencia</span>
-                                            @elseif($cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
+                                            @if($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
                                                 <span class="badge bg-success">Consumida</span>
+                                            @elseif($cisterna->Incidencias)
+                                                <span class="badge bg-danger">Incidencia</span>
                                             @elseif($cisterna->FechaConsumoMG?->isSameDay($hoy))
                                                 <span class="badge bg-info">Hoy</span>
                                             @else

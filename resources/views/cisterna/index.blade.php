@@ -5,31 +5,31 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h4 class="mb-0"><i class="bi bi-list-ul"></i> Listado de Cisternas</h4>
-    <div class="d-flex flex-wrap align-items-center gap-2">
-        <div class="small">
+    <div class="d-grid gap-2" style="grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; max-width: 780px;">
+        <div class="small" style="grid-column: 1 / -1;">
             {{ $cisternas->withQueryString()->links('pagination::bootstrap-4') }}
         </div>
         @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
-            <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-success btn-sm">
+            <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-success btn-sm w-100">
                 <i class="bi bi-file-earmark-excel"></i>
                 <span class="d-none d-md-inline">Importar Excel</span>
             </a>
         @endif
         @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
-            <a href="{{ route('cisterna.create') }}" class="btn btn-primary btn-sm">
+            <a href="{{ route('cisterna.create') }}" class="btn btn-primary btn-sm w-100">
                 <i class="bi bi-plus-lg"></i>
                 <span class="d-none d-md-inline">Nueva Cisterna</span>
             </a>
         @endif
-        <a href="{{ route('cisterna.export', request()->query()) }}" class="btn btn-outline-primary btn-sm">
+        <a href="{{ route('cisterna.export', request()->query()) }}" class="btn btn-outline-primary btn-sm w-100">
             <i class="bi bi-download"></i>
             <span class="d-none d-md-inline">Exportar Excel</span>
         </a>
-        <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary btn-sm">
+        <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary btn-sm w-100">
             <i class="bi bi-speedometer2"></i>
             <span class="d-none d-md-inline">Dashboard</span>
         </a>
-        <a href="{{ route('planificacion.index') }}" class="btn btn-outline-info btn-sm">
+        <a href="{{ route('planificacion.index') }}" class="btn btn-outline-info btn-sm w-100">
             <i class="bi bi-calendar2-week"></i>
             <span class="d-none d-md-inline">Planificación</span>
         </a>
@@ -37,11 +37,11 @@
         @if(auth()->user()->isRoot() || auth()->user()->isAdmin())
             <form method="POST" 
                 action="{{ route('cisterna.destroyAll') }}" 
-                style="display:inline"
+                class="w-100"
                 onsubmit="return confirm('¿Eliminar TODAS las cisternas? Esta acción no se puede deshacer.')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger btn-sm">
+                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
                     <i class="bi bi-trash3"></i>
                     <span class="d-none d-md-inline">Eliminar Todas</span>
                 </button>
@@ -59,9 +59,14 @@
                 placeholder="Buscar conductor, matrícula cisterna, origen..."
                 value="{{ request('texto') }}">
     </div>
-    <div class="col-12 col-md-3">
+    <div class="col-12 col-md-2">
         <input type="date" name="fecha" class="form-control"
                 value="{{ request('fecha') }}">
+    </div>
+    <div class="col-12 col-md-2">
+        <input type="number" name="year" class="form-control"
+                min="2000" max="2100" step="1" placeholder="Año ej:2026"
+                value="{{ request('year') }}">
     </div>
     <div class="col-12 col-md-auto d-flex gap-2">
         <button type="submit" class="btn btn-primary flex-fill">
@@ -75,7 +80,7 @@
 
 {{-- Tabla --}}
 <div class="table-responsive">
-    <table class="table table-bordered table-hover align-middle mb-0"
+    <table class="table table-bordered table-hover align-middle mb-0 table-index-cisternas"
             style="font-size: 0.82rem; white-space: nowrap;">
         <thead>
                 <th>OF</th>
@@ -102,10 +107,11 @@
 
                 @php
                     $hoy = now()->startOfDay();
-                    if ($cisterna->Incidencias) {
-                        $rowClass = 'row-incidencia';
-                    } elseif ($cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2) {
+                    $esTamarite = str_contains(strtolower((string) ($cisterna->Destino ?? '')), 'tamarite de litera');
+                    if ($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2) {
                         $rowClass = 'row-consumida';
+                    } elseif ($cisterna->Incidencias) {
+                        $rowClass = 'row-incidencia';
                     } elseif ($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isSameDay($hoy)) {
                         $rowClass = 'row-hoy';
                     } elseif ($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isAfter($hoy)) {
@@ -148,10 +154,10 @@
                         @endif
                     </td>
                     <td>
-                        @if($cisterna->Incidencias)
-                            <span class="badge bg-danger">Incidencia</span>
-                        @elseif($cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
+                        @if($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
                             <span class="badge bg-success">Consumida</span>
+                        @elseif($cisterna->Incidencias)
+                            <span class="badge bg-danger">Incidencia</span>
                         @elseif($cisterna->FechaConsumoMG?->isSameDay($hoy))
                             <span class="badge bg-info">Hoy</span>
                         @else
@@ -159,7 +165,7 @@
                         @endif
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-warning btn-consumo"
+                        <button class="btn btn-sm btn-consumo"
                                 title="Registrar consumo"
                                 data-id="{{ $cisterna->IdCisterna }}"
                                 data-hec-l1="{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '' }}"
@@ -169,12 +175,12 @@
                             <i class="bi bi-clock"></i>
                         </button>
                         <a href="{{ route('cisterna.show', $cisterna->IdCisterna) }}"
-                            class="btn btn-sm btn-outline-secondary" title="Ver">
+                            class="btn btn-sm btn-outline-view" title="Ver">
                             <i class="bi bi-eye"></i>
                         </a>
                         @if(!auth()->user()->isOperario())
                             <a href="{{ route('cisterna.edit', $cisterna->IdCisterna) }}"
-                                class="btn btn-sm btn-outline-primary" title="Editar">
+                                class="btn btn-sm btn-outline-warning" title="Editar">
                                 <i class="bi bi-pencil"></i>
                             </a>
                         @endif

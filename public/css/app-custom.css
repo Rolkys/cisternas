@@ -7,6 +7,7 @@
    ============================================================ */
 
 :root {
+    color-scheme: light;
     --color-view: #3498db;
     --color-view-hover: #2c80b4;
     --color-view-active: #21618c;
@@ -46,7 +47,9 @@
     --row-pendiente: #e9ecef;
 }
 
+:root.dark-mode,
 body.dark-mode {
+    color-scheme: dark;
     --color-view: #5dade2;
     --color-view-hover: #4aa3dc;
     --color-view-active: #2e86c1;
@@ -78,6 +81,10 @@ body {
     color: var(--color-text);
 }
 
+html, body {
+    min-height: 100%;
+}
+
 .btn {
     transition: all 0.2s ease;
 }
@@ -91,6 +98,60 @@ body {
     --bs-table-bg: var(--color-surface);
     --bs-table-color: var(--color-text);
     --bs-table-border-color: var(--color-border);
+}
+
+.form-control,
+.form-select,
+.form-control-sm,
+.form-control:disabled,
+.form-select:disabled,
+.input-group-text,
+textarea.form-control {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+}
+
+.form-control::placeholder,
+textarea.form-control::placeholder {
+    color: var(--color-text-muted) !important;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea.form-control:focus {
+    border-color: var(--color-view) !important;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25) !important;
+}
+
+.modal-content,
+.modal-header,
+.modal-footer,
+.dropdown-menu,
+.list-group-item {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+}
+
+.alert {
+    border-color: var(--color-border);
+}
+
+body.dark-mode .alert-success {
+    background-color: rgba(46, 204, 113, 0.18) !important;
+    color: #d5f5e3 !important;
+    border-color: rgba(46, 204, 113, 0.35) !important;
+}
+
+body.dark-mode .alert-danger {
+    background-color: rgba(230, 0, 35, 0.18) !important;
+    color: #fadbd8 !important;
+    border-color: rgba(230, 0, 35, 0.35) !important;
+}
+
+body.dark-mode .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
 }
 
 /* NAVBAR - NEGRO */
@@ -325,6 +386,15 @@ body.dark-mode .btn-ghost:active {
     background-color: rgba(255,255,255,0.08) !important;
 }
 
+body.dark-mode .bg-light {
+    background-color: #2a2a2a !important;
+    color: var(--color-text) !important;
+}
+
+body.dark-mode .table-hover > tbody > tr:not(.row-consumida):not(.row-incidencia):not(.row-hoy):not(.row-futura):not(.row-pendiente):hover > * {
+    background-color: #252525 !important;
+}
+
 /* ESTADO DISABLED */
 .btn:disabled,
 .btn.disabled {
@@ -359,6 +429,65 @@ body.dark-mode .btn-ghost:active {
 .table > tbody > tr.row-futura > td { background-color: var(--row-futura) !important; }
 .table > tbody > tr.row-pendiente > td { background-color: var(--row-pendiente) !important; }
 
+/* Fija el color de fila usando variables internas de Bootstrap para evitar blanqueo */
+.table > tbody > tr.row-consumida {
+    --bs-table-bg: var(--row-consumida);
+    --bs-table-accent-bg: var(--row-consumida);
+    --bs-table-hover-bg: var(--row-consumida);
+    --bs-table-striped-bg: var(--row-consumida);
+}
+.table > tbody > tr.row-incidencia {
+    --bs-table-bg: var(--row-incidencia);
+    --bs-table-accent-bg: var(--row-incidencia);
+    --bs-table-hover-bg: var(--row-incidencia);
+    --bs-table-striped-bg: var(--row-incidencia);
+}
+.table > tbody > tr.row-hoy {
+    --bs-table-bg: var(--row-hoy);
+    --bs-table-accent-bg: var(--row-hoy);
+    --bs-table-hover-bg: var(--row-hoy);
+    --bs-table-striped-bg: var(--row-hoy);
+}
+.table > tbody > tr.row-futura {
+    --bs-table-bg: var(--row-futura);
+    --bs-table-accent-bg: var(--row-futura);
+    --bs-table-hover-bg: var(--row-futura);
+    --bs-table-striped-bg: var(--row-futura);
+}
+.table > tbody > tr.row-pendiente {
+    --bs-table-bg: var(--row-pendiente);
+    --bs-table-accent-bg: var(--row-pendiente);
+    --bs-table-hover-bg: var(--row-pendiente);
+    --bs-table-striped-bg: var(--row-pendiente);
+}
+
+/* Evita que Bootstrap pinte de blanco las filas de estado al hover */
+.table-hover > tbody > tr.row-consumida:hover > td {
+    background-color: var(--row-consumida) !important;
+    box-shadow: inset 0 0 0 9999px var(--row-consumida) !important;
+    --bs-table-accent-bg: var(--row-consumida) !important;
+}
+.table-hover > tbody > tr.row-incidencia:hover > td {
+    background-color: var(--row-incidencia) !important;
+    box-shadow: inset 0 0 0 9999px var(--row-incidencia) !important;
+    --bs-table-accent-bg: var(--row-incidencia) !important;
+}
+.table-hover > tbody > tr.row-hoy:hover > td {
+    background-color: var(--row-hoy) !important;
+    box-shadow: inset 0 0 0 9999px var(--row-hoy) !important;
+    --bs-table-accent-bg: var(--row-hoy) !important;
+}
+.table-hover > tbody > tr.row-futura:hover > td {
+    background-color: var(--row-futura) !important;
+    box-shadow: inset 0 0 0 9999px var(--row-futura) !important;
+    --bs-table-accent-bg: var(--row-futura) !important;
+}
+.table-hover > tbody > tr.row-pendiente:hover > td {
+    background-color: var(--row-pendiente) !important;
+    box-shadow: inset 0 0 0 9999px var(--row-pendiente) !important;
+    --bs-table-accent-bg: var(--row-pendiente) !important;
+}
+
 .row-consumida { background-color: var(--row-consumida) !important; }
 .row-incidencia { background-color: var(--row-incidencia) !important; }
 .row-hoy { background-color: var(--row-hoy) !important; }
@@ -368,11 +497,18 @@ body.dark-mode .btn-ghost:active {
 /* PAGINACIÓN */
 .page-link {
     color: var(--color-view) !important;
+    background-color: var(--color-surface) !important;
+    border-color: var(--color-border) !important;
 }
 .page-item.active .page-link {
     background-color: var(--color-view) !important;
     border-color: var(--color-view) !important;
     color: white !important;
+}
+body.dark-mode .page-item.disabled .page-link {
+    background-color: #1b1b1b !important;
+    border-color: var(--color-border) !important;
+    color: #6c757d !important;
 }
 
 /* LOGIN */
@@ -401,4 +537,21 @@ body.login-page {
     word-break: break-word;
     font-size: 0.78rem;
     color: var(--color-text-muted);
+}
+
+/* INDEX: tabla siempre negra, sin cambio al hover */
+body.dark-mode .table-index-cisternas > :not(caption) > * > * {
+    background-color: #121212 !important;
+    color: #ecf0f1 !important;
+    border-color: #2b2b2b !important;
+    --bs-table-bg: #121212 !important;
+    --bs-table-accent-bg: #121212 !important;
+    --bs-table-hover-bg: #121212 !important;
+    --bs-table-striped-bg: #121212 !important;
+}
+
+body.dark-mode .table-index-cisternas.table-hover > tbody > tr:hover > * {
+    background-color: #121212 !important;
+    box-shadow: inset 0 0 0 9999px #121212 !important;
+    --bs-table-accent-bg: #121212 !important;
 }

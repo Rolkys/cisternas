@@ -3,7 +3,7 @@
 /**
  * DOC: Proyecto Cisternas
  * Archivo personalizado del dominio de negocio.
- * Contiene logica especifica de gestion de cisternas/usuarios/planificacion.
+ * Contiene l贸gica espec铆fica de gesti贸n de cisternas/usuarios/planificaci贸n.
  */
 
 namespace App\Http\Controllers;
@@ -50,7 +50,7 @@ class AdminController extends Controller
         $plainPassword = $this->generatePasswordFromEmail($validated['email']);
         if ($validated['password_generada'] !== $plainPassword) {
             return back()
-                ->withErrors(['password_generada' => 'Debes generar la contrase馻ss con el boton antes de crear.'])
+                ->withErrors(['password_generada' => 'Debes generar la contrase帽a con el bot贸n antes de crear.'])
                 ->withInput();
         }
 
@@ -70,7 +70,7 @@ class AdminController extends Controller
 
         return redirect()->route('admin.users')->with(
             'success',
-            "Usuario creado correctamente.<br>Contrase馻ss generada: <b>{$plainPassword}</b>"
+            "Usuario creado correctamente.<br>Contrase帽a generada: <b>{$plainPassword}</b>"
         );
     }
 
@@ -166,13 +166,13 @@ class AdminController extends Controller
     }
 
     /**
-     * Genera una contrase馻ss deterministica a partir del email.
+     * Genera una contrase帽a determin铆stica a partir del email.
      */
     private function generatePasswordFromEmail(string $email): string
     {
         $localPart = trim(explode('@', $email)[0] ?? '');
         if ($localPart === '') {
-            throw new \InvalidArgumentException('El email no tiene parte local valida.');
+            throw new \InvalidArgumentException('El email no tiene parte local v谩lida.');
         }
 
         $upperLocal = strtoupper($localPart);
@@ -189,23 +189,23 @@ class AdminController extends Controller
     {
         return match ($role) {
             'Root' => [
-                'Gestion total del sistema.',
+                'Gesti贸n total del sistema.',
                 'Puede crear, editar y eliminar usuarios.',
                 'Puede gestionar todas las cisternas y operaciones.',
             ],
             'Administrador' => [
-                'Gestion de usuarios (excepto restricciones del root).',
+                'Gesti贸n de usuarios (excepto restricciones del root).',
                 'Puede crear, editar y eliminar registros de negocio.',
-                'Acceso completo a paneles de administracion.',
+                'Acceso completo a paneles de administraci贸n.',
             ],
             'operario' => [
-                'Puede consultar informacion operativa.',
+                'Puede consultar informaci贸n operativa.',
                 'Puede registrar o actualizar datos operativos permitidos.',
                 'No puede gestionar usuarios administradores/root.',
             ],
             default => [
-                'Puede ver la informacion permitida por su perfil.',
-                'Puede operar sobre funciones basicas habilitadas.',
+                'Puede ver la informaci贸n permitida por su perfil.',
+                'Puede operar sobre funciones b谩sicas habilitadas.',
                 'No puede administrar usuarios del sistema.',
             ],
         };

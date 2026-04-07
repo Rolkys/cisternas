@@ -22,8 +22,11 @@ class CisternaController extends Controller
     {
         $query = Cisterna::query();
         $year = $request->input('year');
+        $yearValido = is_string($year) || is_numeric($year)
+            ? preg_match('/^\d{4}$/', (string) $year)
+            : false;
 
-        if ($request->filled('year')) {
+        if ($request->filled('year') && $yearValido) {
             $query->where(function ($q) use ($year) {
                 $q->whereYear('FechaConsumoMG', $year)
                     ->orWhere(function ($q2) use ($year) {
@@ -463,6 +466,7 @@ class CisternaController extends Controller
                 }
 
                 $data = $this->syncFechasConsumoEntrada($data);
+                $data = $this->normalizeImportConsumptionHours($data);
                 $data = $this->autoConsumir($data);
 
                 $existing = Cisterna::where('OF', $data['OF'] ?? null)
@@ -524,6 +528,7 @@ class CisternaController extends Controller
             }
 
             $data = $this->syncFechasConsumoEntrada($data);
+            $data = $this->normalizeImportConsumptionHours($data);
             $data = $this->autoConsumir($data);
 
             Cisterna::create($data);
@@ -547,6 +552,20 @@ class CisternaController extends Controller
     public function export(Request $request)
     {
         $query = Cisterna::query();
+        $year = $request->input('year');
+        $yearValido = is_string($year) || is_numeric($year)
+            ? preg_match('/^\d{4}$/', (string) $year)
+            : false;
+
+        if ($request->filled('year') && $yearValido) {
+            $query->where(function ($q) use ($year) {
+                $q->whereYear('FechaConsumoMG', $year)
+                    ->orWhere(function ($q2) use ($year) {
+                        $q2->whereNull('FechaConsumoMG')
+                            ->whereYear('FechaEntradaMG', $year);
+                    });
+            });
+        }
 
         if($request->filled('texto')){
             $texto = $request->texto;
@@ -599,10 +618,21 @@ class CisternaController extends Controller
         }
 
         $total          = (clone $query)->count();
-        $consumidas     = (clone $query)->whereNotNull('HoraRealConsumoL1')->count();
-        $pendientes     = (clone $query)->whereNull('HoraRealConsumoL1')
-                                        ->whereNull('Incidencias')
-                                        ->count();
+        $consumidas     = (clone $query)
+                            ->where(function ($q) {
+                                $q->whereNotNull('HoraRealConsumoL1')
+                                  ->orWhereNotNull('HoraRealConsumoL2')
+                                  ->orWhereRaw('LOWER(Destino) LIKE ?', ['%tamarite de litera%']);
+                            })
+                            ->count();
+        $pendientes     = (clone $query)
+                            ->whereNull('Incidencias')
+                            ->where(function ($q) {
+                                $q->whereNull('HoraRealConsumoL1')
+                                  ->whereNull('HoraRealConsumoL2')
+                                  ->whereRaw('LOWER(Destino) NOT LIKE ?', ['%tamarite de litera%']);
+                            })
+                            ->count();
         
         $incidencias    = (clone $query)->whereNotNull('Incidencias')
                                         ->where('Incidencias', '!=', '')
@@ -612,6 +642,8 @@ class CisternaController extends Controller
         
         $en_transito    = Cisterna::whereNull('FechaEntradaMG')
                                     ->whereNull('HoraRealConsumoL1')
+                                    ->whereNull('HoraRealConsumoL2')
+                                    ->whereRaw('LOWER(Destino) NOT LIKE ?', ['%tamarite de litera%'])
                                     ->count();
 
         $recientes      = Cisterna::orderByDesc('IdCisterna')->take(5)->get();
@@ -654,40 +686,8 @@ class CisternaController extends Controller
      */
     private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
     {
-        $destino = trim(strtolower($data['Destino'] ?? ''));
-
-        $esMovatalla = str_contains($destino, 'moratalla') || $destino === '';
-
-        if (!$esMovatalla) {
-            $yaConsumaL1 = !empty($data['HoraRealConsumoL1'])
-                || ($cisterna && $cisterna->HoraRealConsumoL1);
-            $yaConsumaL2 = !empty($data['HoraRealConsumoL2'])
-                || ($cisterna && $cisterna->HoraRealConsumoL2);
-
-            if (!$yaConsumaL1 && !$yaConsumaL2) {
-                // CAMBIO 1: Fallback a FechaEntradaMG si no hay FechaConsumoMG
-                $fechaBase = !empty($data['FechaConsumoMG'])
-                    ? \Carbon\Carbon::parse($data['FechaConsumoMG'])->format('Y-m-d')
-                    : (!empty($data['FechaEntradaMG'])
-                        ? \Carbon\Carbon::parse($data['FechaEntradaMG'])->format('Y-m-d')
-                        : now()->format('Y-m-d'));
-
-                if (!empty($data['HoraEstimadaConsumoL1'])) {
-                    $hora = strlen($data['HoraEstimadaConsumoL1']) <= 5
-                        ? $data['HoraEstimadaConsumoL1']
-                        : \Carbon\Carbon::parse($data['HoraEstimadaConsumoL1'])->format('H:i');
-                    $data['HoraRealConsumoL1'] = $fechaBase . ' ' . $hora . ':00';
-                } elseif (!empty($data['HoraEstimadaConsumoL2'])) {
-                    $hora = strlen($data['HoraEstimadaConsumoL2']) <= 5
-                        ? $data['HoraEstimadaConsumoL2']
-                        : \Carbon\Carbon::parse($data['HoraEstimadaConsumoL2'])->format('H:i');
-                    $data['HoraRealConsumoL2'] = $fechaBase . ' ' . $hora . ':00';
-                } else {
-                    $data['HoraRealConsumoL1'] = $fechaBase . ' ' . now()->format('H:i') . ':00';
-                }
-            }
-        }
-
+        // No autocompletar H.R.C a partir de H.E.C ni de la hora actual.
+        // Las horas reales solo se guardan si el usuario las introduce explícitamente.
         return $data;
     }
 
@@ -698,6 +698,29 @@ class CisternaController extends Controller
     {
         $fechaConsumo = $data['FechaConsumoMG'] ?? null;
         $data['FechaEntradaMG'] = $fechaConsumo ?: null;
+
+        return $data;
+    }
+
+    /**
+     * Normaliza horas de consumo de importacion.
+     * Si vienen vacias, se guardan como null para mostrarse como "--".
+     */
+    private function normalizeImportConsumptionHours(array $data): array
+    {
+        $keys = [
+            'HoraEstimadaConsumoL1',
+            'HoraEstimadaConsumoL2',
+            'HoraRealConsumoL1',
+            'HoraRealConsumoL2',
+        ];
+
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $data)) {
+                $value = trim((string) $data[$key]);
+                $data[$key] = $value === '' ? null : $value;
+            }
+        }
 
         return $data;
     }
@@ -717,5 +740,3 @@ class CisternaController extends Controller
             ->with('success', 'Todas las cisternas han sido eliminadas correctamente.');
     }
 }
-
-

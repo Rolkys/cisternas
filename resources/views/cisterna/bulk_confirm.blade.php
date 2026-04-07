@@ -63,7 +63,11 @@
                     </thead>
                     <tbody>
                         @foreach($preview as $i => $fila)
-                            @php $error = $fila['_error'] ?? null; @endphp
+                            @php
+                                $error = $fila['_error'] ?? null;
+                                $destinoTexto = trim((string) ($fila['Destino'] ?? ''));
+                                $esMoratalla = str_contains(strtolower($destinoTexto), 'moratalla');
+                            @endphp
                             <tr class="{{ $error ? 'table-danger' : '' }}">
 
                                 {{-- Checkbox incluir --}}
@@ -190,7 +194,7 @@
                                 <td>
                                     <input type="time"
                                             name="filas[{{ $i }}][HoraEstimadaConsumoL1]"
-                                            value="{{ isset($fila['HoraEstimadaConsumoL1']) && $fila['HoraEstimadaConsumoL1']
+                                            value="{{ !$esMoratalla && isset($fila['HoraEstimadaConsumoL1']) && $fila['HoraEstimadaConsumoL1']
                                                 ? \Carbon\Carbon::parse($fila['HoraEstimadaConsumoL1'])->format('H:i')
                                                 : '' }}"
                                             class="form-control form-control-sm hec-l1"
@@ -202,7 +206,7 @@
                                 <td>
                                     <input type="time"
                                             name="filas[{{ $i }}][HoraEstimadaConsumoL2]"
-                                            value="{{ isset($fila['HoraEstimadaConsumoL2']) && $fila['HoraEstimadaConsumoL2']
+                                            value="{{ !$esMoratalla && isset($fila['HoraEstimadaConsumoL2']) && $fila['HoraEstimadaConsumoL2']
                                                 ? \Carbon\Carbon::parse($fila['HoraEstimadaConsumoL2'])->format('H:i')
                                                 : '' }}"
                                             class="form-control form-control-sm hec-l2"
@@ -311,4 +315,3 @@ document.getElementById('bulk-edit-form')?.addEventListener('submit', function (
 });
 </script>
 @endsection
-
