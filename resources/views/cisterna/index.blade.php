@@ -1,7 +1,13 @@
-﻿{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
+﻿
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
 @section('content')
+
+@php
+    use Carbon\Carbon;
+@endphp
+
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <h4 class="mb-0"><i class="bi bi-list-ul"></i> Listado de Cisternas</h4>
@@ -33,7 +39,6 @@
             <i class="bi bi-calendar2-week"></i>
             <span class="d-none d-md-inline">Planificación</span>
         </a>
-        {{-- En la sección de botones superiores, después del botón de Planificación --}}
         @if(auth()->user()->isRoot() || auth()->user()->isAdmin())
             <form method="POST" 
                 action="{{ route('cisterna.destroyAll') }}" 
@@ -46,7 +51,6 @@
                     <span class="d-none d-md-inline">Eliminar Todas</span>
                 </button>
             </form>
-            {{-- TODO: Eliminar este botón después de la migración o cuando ya no sea necesario --}}
         @endif
         
     </div>
@@ -83,6 +87,7 @@
     <table class="table table-bordered table-hover align-middle mb-0 table-index-cisternas"
             style="font-size: 0.82rem; white-space: nowrap;">
         <thead>
+            <tr>
                 <th>OF</th>
                 <th>Nº</th>
                 <th>Origen</th>
@@ -92,9 +97,9 @@
                 <th>Conductor</th>
                 <th>Teléfono</th>
                 <th title="Fecha Consumo MG">Fecha Consumo</th>
-                <th title="Hora estida consumo Línea 1">H.E.C L1</th>
+                <th title="Hora estimada consumo Línea 1">H.E.C L1</th>
                 <th title="Hora Real Consumo Línea 1">H.R.C L1</th>
-                <th title="Hora estida consumo Línea 2">H.E.C L2</th>
+                <th title="Hora estimada consumo Línea 2">H.E.C L2</th>
                 <th title="Hora Real Consumo Línea 2">H.R.C L2</th>
                 <th title="Food and Drug Administration">FDA</th>
                 <th title="GlobalGAP">GAP</th>
@@ -106,8 +111,8 @@
             @forelse($cisternas as $cisterna)
 
                 @php
-                    $hoy = now()->startOfDay();
-                    $esTamarite = str_contains(strtolower((string) ($cisterna->Destino ?? '')), 'tamarite de litera');
+                    $hoy = Carbon::now()->startOfDay();
+                    $esTamarite = strpos(strtolower((string) ($cisterna->Destino ?? '')), 'tamarite de litera') !== false;
                     if ($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2) {
                         $rowClass = 'row-consumida';
                     } elseif ($cisterna->Incidencias) {
@@ -130,11 +135,11 @@
                     <td>{{ $cisterna->MatriculaCisterna ?: '—' }}</td>
                     <td>{{ $cisterna->Conductor }}</td>
                     <td>{{ $cisterna->Telefono ?: '—' }}</td>
-                    <td>{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}</td>
-                    <td>{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '--' }}</td>
-                    <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '--' }}</td>
-                    <td>{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '--' }}</td>
-                    <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '--' }}</td>
+                    <td>{{ $cisterna->FechaConsumoMG ? $cisterna->FechaConsumoMG->format('d/m/Y') : '-' }}</td>
+                    <td>{{ $cisterna->HoraEstimadaConsumoL1 ? $cisterna->HoraEstimadaConsumoL1->format('H:m') : '--' }}</td>
+                    <td>{{ $cisterna->HoraRealConsumoL1 ? $cisterna->HoraRealConsumoL1->format('H:m') : '--' }}</td>
+                    <td>{{ $cisterna->HoraEstimadaConsumoL2 ? $cisterna->HoraEstimadaConsumoL2->format('H:m') : '--' }}</td>
+                    <td>{{ $cisterna->HoraRealConsumoL2 ? $cisterna->HoraRealConsumoL2->format('H:m') : '--' }}</td>
                     <td>
                         @if($cisterna->FDA === true)
                             <span class="badge bg-success">Sí</span>
@@ -158,7 +163,7 @@
                             <span class="badge bg-success">Consumida</span>
                         @elseif($cisterna->Incidencias)
                             <span class="badge bg-danger">Incidencia</span>
-                        @elseif($cisterna->FechaConsumoMG?->isSameDay($hoy))
+                        @elseif($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isSameDay($hoy))
                             <span class="badge bg-info">Hoy</span>
                         @else
                             <span class="badge bg-warning text-dark">Pendiente</span>
@@ -168,10 +173,10 @@
                         <button class="btn btn-sm btn-consumo"
                                 title="Registrar consumo"
                                 data-id="{{ $cisterna->IdCisterna }}"
-                                data-hec-l1="{{ $cisterna->HoraEstimadaConsumoL1?->format('H:i') ?? '' }}"
-                                data-hrc-l1="{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '' }}"
-                                data-hec-l2="{{ $cisterna->HoraEstimadaConsumoL2?->format('H:i') ?? '' }}"
-                                data-hrc-l2="{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '' }}">
+                                data-hec-l1="{{ $cisterna->HoraEstimadaConsumoL1 ? $cisterna->HoraEstimadaConsumoL1->format('H:m') : '' }}"
+                                data-hrc-l1="{{ $cisterna->HoraRealConsumoL1 ? $cisterna->HoraRealConsumoL1->format('H:m') : '' }}"
+                                data-hec-l2="{{ $cisterna->HoraEstimadaConsumoL2 ? $cisterna->HoraEstimadaConsumoL2->format('H:m') : '' }}"
+                                data-hrc-l2="{{ $cisterna->HoraRealConsumoL2 ? $cisterna->HoraRealConsumoL2->format('H:m') : '' }}">
                             <i class="bi bi-clock"></i>
                         </button>
                         <a href="{{ route('cisterna.show', $cisterna->IdCisterna) }}"
@@ -201,7 +206,7 @@
 
             @empty
                 <tr>
-                    <td colspan="15" class="text-center text-muted">
+                    <td colspan="17" class="text-center text-muted">
                         No hay cisternas registradas.
                     </td>
                 </tr>
@@ -302,3 +307,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 @endsection
+

@@ -1,3 +1,4 @@
+
 {{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
 @extends('layouts.app')
 
@@ -92,6 +93,7 @@
             <div class="card-body p-0">
                 <table class="table table-sm table-hover align-middle mb-0">
                     <thead style="background:#0f2130; color:#fff;">
+                        <tr>
                             <th>OF</th>
                             <th>Nº</th>
                             <th>Conductor</th>
@@ -109,8 +111,8 @@
                                 <td>{{ $c->OF }}</td>
                                 <td>{{ str_pad($c->NumeroCisterna, 4, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ $c->Conductor }}</td>
-                                <td>{{ $c->HoraEstimadaConsumoL1?->format('H:i') ?? '—' }}</td>
-                                <td>{{ $c->HoraEstimadaConsumoL2?->format('H:i') ?? '—' }}</td>
+                                <td>{{ optional($c->HoraEstimadaConsumoL1)->format('H:m') ?? '—' }}</td>
+                                <td>{{ optional($c->HoraEstimadaConsumoL2)->format('H:m') ?? '—' }}</td>
                                 <td>
                                     @if($esTamariteHoy || $c->HoraRealConsumoL1 || $c->HoraRealConsumoL2)
                                         <span class="badge bg-success">Consumida</span>
@@ -164,101 +166,102 @@
             </div>
         </div>
     </div>
+
     {{-- Calendario de años --}}
-<div class="row g-3 mt-2">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header fw-bold">
-                <i class="bi bi-calendar3"></i> Cisternas por año
-            </div>
-            <div class="card-body">
-
-                {{-- Botones de años --}}
-                <div class="d-flex gap-2 flex-wrap mb-3">
-                    @forelse($años as $año)
-                        <a href="{{ route('dashboard', ['año' => $año]) }}"
-                            class="btn {{ $añoSeleccionado == $año ? 'btn-primary' : 'btn-outline-primary' }}">
-                            {{ $año }}
-                        </a>
-                    @empty
-                        <span class="text-muted">No hay años disponibles.</span>
-                    @endforelse
+    <div class="row g-3 mt-2">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header fw-bold">
+                    <i class="bi bi-calendar3"></i> Cisternas por año
                 </div>
-
-                {{-- Listado del año seleccionado --}}
-                @if($añoSeleccionado)
-                    <h6 class="fw-bold mb-3">
-                        Cisternas de {{ $añoSeleccionado }}
-                        <span class="badge bg-secondary">{{ $cisternasDelAño->count() }}</span>
-                    </h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered table-hover align-middle" style="font-size:0.82rem; white-space:nowrap;">
-                            <thead style="background:#0f2130; color:#fff;">
-                                <tr>
-                                    <th>OF</th>
-                                    <th>Nº</th>
-                                    <th>Conductor</th>
-                                    <th>Origen</th>
-                                    <th>Destino</th>
-                                    <th>Fecha Consumo</th>
-                                    <th>H.R.C L1</th>
-                                    <th>H.R.C L2</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($cisternasDelAño as $cisterna)
-                                    @php
-                                        $hoy = now()->startOfDay();
-                                        $esTamarite = str_contains(strtolower((string) ($cisterna->Destino ?? '')), 'tamarite de litera');
-                                        $rowClass = '';
-                                        if ($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2) {
-                                            $rowClass = 'row-consumida';
-                                        } elseif ($cisterna->Incidencias) {
-                                            $rowClass = 'row-incidencia';
-                                        } elseif ($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isSameDay($hoy)) {
-                                            $rowClass = 'row-hoy';
-                                        } elseif ($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isAfter($hoy)) {
-                                            $rowClass = 'row-futura';
-                                        } else {
-                                            $rowClass = 'row-pendiente';
-                                        }
-                                    @endphp
-                                    <tr class="{{ $rowClass }}">
-                                        <td>{{ $cisterna->OF }}</td>
-                                        <td>{{ str_pad($cisterna->NumeroCisterna, 4, '0', STR_PAD_LEFT) }}</td>
-                                        <td>{{ $cisterna->Conductor }}</td>
-                                        <td>{{ $cisterna->Origen ?: '—' }}</td>
-                                        <td>{{ $cisterna->Destino ?: '—' }}</td>
-                                        <td>{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}</td>
-                                        <td>{{ $cisterna->HoraRealConsumoL1?->format('H:i') ?? '—' }}</td>
-                                        <td>{{ $cisterna->HoraRealConsumoL2?->format('H:i') ?? '—' }}</td>
-                                        <td>
-                                            @if($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
-                                                <span class="badge bg-success">Consumida</span>
-                                            @elseif($cisterna->Incidencias)
-                                                <span class="badge bg-danger">Incidencia</span>
-                                            @elseif($cisterna->FechaConsumoMG?->isSameDay($hoy))
-                                                <span class="badge bg-info">Hoy</span>
-                                            @else
-                                                <span class="badge bg-warning text-dark">Pendiente</span>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="9" class="text-center text-muted">
-                                            No hay cisternas en {{ $añoSeleccionado }}.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                <div class="card-body">
+                    {{-- Botones de años --}}
+                    <div class="d-flex gap-2 flex-wrap mb-3">
+                        @forelse($años as $año)
+                            <a href="{{ route('dashboard', ['año' => $año]) }}"
+                                class="btn {{ $añoSeleccionado == $año ? 'btn-primary' : 'btn-outline-primary' }}">
+                                {{ $año }}
+                            </a>
+                        @empty
+                            <span class="text-muted">No hay años disponibles.</span>
+                        @endforelse
                     </div>
-                @else
-                    <p class="text-muted">Selecciona un año para ver sus cisternas.</p>
-                @endif
 
+                    {{-- Listado del año seleccionado --}}
+                    @if($añoSeleccionado)
+                        <h6 class="fw-bold mb-3">
+                            Cisternas de {{ $añoSeleccionado }}
+                            <span class="badge bg-secondary">{{ $cisternasDelAño->count() }}</span>
+                        </h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover align-middle" style="font-size:0.82rem; white-space:nowrap;">
+                                <thead style="background:#0f2130; color:#fff;">
+                                    <tr>
+                                        <th>OF</th>
+                                        <th>Nº</th>
+                                        <th>Conductor</th>
+                                        <th>Origen</th>
+                                        <th>Destino</th>
+                                        <th>Fecha Consumo</th>
+                                        <th>H.R.C L1</th>
+                                        <th>H.R.C L2</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($cisternasDelAño as $cisterna)
+                                        @php
+                                            $hoy = now()->startOfDay();
+                                            $esTamarite = str_contains(strtolower((string) ($cisterna->Destino ?? '')), 'tamarite de litera');
+                                            $rowClass = '';
+                                            if ($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2) {
+                                                $rowClass = 'row-consumida';
+                                            } elseif ($cisterna->Incidencias) {
+                                                $rowClass = 'row-incidencia';
+                                            } elseif ($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isSameDay($hoy)) {
+                                                $rowClass = 'row-hoy';
+                                            } elseif ($cisterna->FechaConsumoMG && $cisterna->FechaConsumoMG->isAfter($hoy)) {
+                                                $rowClass = 'row-futura';
+                                            } else {
+                                                $rowClass = 'row-pendiente';
+                                            }
+                                        @endphp
+                                        <tr class="{{ $rowClass }}">
+                                            <td>{{ $cisterna->OF }}</td>
+                                            <td>{{ str_pad($cisterna->NumeroCisterna, 4, '0', STR_PAD_LEFT) }}</td>
+                                            <td>{{ $cisterna->Conductor }}</td>
+                                            <td>{{ $cisterna->Origen ?: '—' }}</td>
+                                            <td>{{ $cisterna->Destino ?: '—' }}</td>
+                                            <td>{{ optional($cisterna->FechaConsumoMG)->format('d/m/Y') ?? '—' }}</td>
+                                            <td>{{ optional($cisterna->HoraRealConsumoL1)->format('H:m') ?? '—' }}</td>
+                                            <td>{{ optional($cisterna->HoraRealConsumoL2)->format('H:m') ?? '—' }}</td>
+                                            <td>
+                                                @if($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
+                                                    <span class="badge bg-success">Consumida</span>
+                                                @elseif($cisterna->Incidencias)
+                                                    <span class="badge bg-danger">Incidencia</span>
+                                                @elseif(optional($cisterna->FechaConsumoMG)->isSameDay($hoy))
+                                                    <span class="badge bg-info">Hoy</span>
+                                                @else
+                                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="9" class="text-center text-muted">
+                                                No hay cisternas en {{ $añoSeleccionado }}.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <p class="text-muted">Selecciona un año para ver sus cisternas.</p>
+                    @endif
+
+                </div>
             </div>
         </div>
     </div>
@@ -266,3 +269,4 @@
 
 </div>
 @endsection
+

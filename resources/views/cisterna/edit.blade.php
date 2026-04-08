@@ -128,7 +128,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="FechaConsumoMG" class="form-label">Fecha Consumo MG</label>
                                     <input type="date" class="form-control @error('FechaConsumoMG') is-invalid @enderror" 
-                                           id="FechaConsumoMG" name="FechaConsumoMG" value="{{ old('FechaConsumoMG', $cisterna->FechaConsumoMG?->format('Y-m-d')) }}">
+value="{{ old('FechaConsumoMG', optional($cisterna->FechaConsumoMG)->format('Y-m-d')) }}">
                                     @error('FechaConsumoMG')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -215,7 +215,7 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Fecha Consumo MG</label>
-                                    <input type="text" class="form-control bg-light" value="{{ $cisterna->FechaConsumoMG?->format('d/m/Y') ?? '—' }}" disabled>
+value="{{ optional($cisterna->FechaConsumoMG)->format('d/m/Y') ?? '—' }}" disabled>
                                 </div>
 
                                 </div>
@@ -232,7 +232,7 @@
                                 <label for="HoraEstimadaConsumoL1" class="form-label">H. Estimada Consumo L1</label>
                                 <input type="time" class="form-control @error('HoraEstimadaConsumoL1') is-invalid @enderror"
                                        id="HoraEstimadaConsumoL1" name="HoraEstimadaConsumoL1"
-                                       value="{{ old('HoraEstimadaConsumoL1', $cisterna->HoraEstimadaConsumoL1?->format('H:i')) }}">
+value="{{ old('HoraEstimadaConsumoL1', optional($cisterna->HoraEstimadaConsumoL1)->format('H:i')) }}">
                                 @error('HoraEstimadaConsumoL1')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -242,7 +242,7 @@
                                 <label for="HoraEstimadaConsumoL2" class="form-label">H. Estimada Consumo L2</label>
                                 <input type="time" class="form-control @error('HoraEstimadaConsumoL2') is-invalid @enderror"
                                        id="HoraEstimadaConsumoL2" name="HoraEstimadaConsumoL2"
-                                       value="{{ old('HoraEstimadaConsumoL2', $cisterna->HoraEstimadaConsumoL2?->format('H:i')) }}">
+value="{{ old('HoraEstimadaConsumoL2', optional($cisterna->HoraEstimadaConsumoL2)->format('H:i')) }}">
                                 @error('HoraEstimadaConsumoL2')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -255,7 +255,7 @@
                                 <label for="HoraRealConsumoL1" class="form-label">H. Real Consumo L1</label>
                                 <input type="time" class="form-control @error('HoraRealConsumoL1') is-invalid @enderror" 
                                        id="HoraRealConsumoL1" name="HoraRealConsumoL1" 
-                                       value="{{ old('HoraRealConsumoL1', $cisterna->HoraRealConsumoL1?->format('H:i')) }}">
+value="{{ old('HoraRealConsumoL1', optional($cisterna->HoraRealConsumoL1)->format('H:i')) }}">
                                 @error('HoraRealConsumoL1')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -265,7 +265,7 @@
                                 <label for="HoraRealConsumoL2" class="form-label">H. Real Consumo L2</label>
                                 <input type="time" class="form-control @error('HoraRealConsumoL2') is-invalid @enderror" 
                                        id="HoraRealConsumoL2" name="HoraRealConsumoL2" 
-                                       value="{{ old('HoraRealConsumoL2', $cisterna->HoraRealConsumoL2?->format('H:i')) }}">
+value="{{ old('HoraRealConsumoL2', optional($cisterna->HoraRealConsumoL2)->format('H:i')) }}">
                                 @error('HoraRealConsumoL2')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

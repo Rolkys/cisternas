@@ -66,7 +66,7 @@
                             @php
                                 $error = $fila['_error'] ?? null;
                                 $destinoTexto = trim((string) ($fila['Destino'] ?? ''));
-                                $esMoratalla = str_contains(strtolower($destinoTexto), 'moratalla');
+$esMoratalla = strpos(strtolower($destinoTexto), 'moratalla') !== false;
                             @endphp
                             <tr class="{{ $error ? 'table-danger' : '' }}">
 
