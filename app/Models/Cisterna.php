@@ -39,27 +39,21 @@ class Cisterna extends Model
         'Incidencias'
     ];
 
-    /**
-     * Define los casts automaticos de atributos del modelo.
-     */
-    protected function casts(): array
-    {
-        return [
-            // Fechas/horas
-            'FechaFabricacionHuelva'    => 'datetime',
-            'HoraSalida'                => 'datetime',
-            'FechaEntradaMG'            => 'datetime',
-            'HoraLlegadaEstimada'       => 'datetime',
-            'FechaConsumoMG'            => 'datetime',
-            'HoraEstimadaConsumoL1'     => 'datetime',
-            'HoraEstimadaConsumoL2'     => 'datetime',
-            'HoraRealConsumoL1'         => 'datetime',
-            'HoraRealConsumoL2'         => 'datetime',
+    protected $casts = [
+        // Fechas/horas
+        'FechaFabricacionHuelva'    => 'datetime',
+        'HoraSalida'                => 'datetime',
+        'FechaEntradaMG'            => 'datetime',
+        'HoraLlegadaEstimada'       => 'datetime',
+        'FechaConsumoMG'            => 'datetime',
+        'HoraEstimadaConsumoL1'     => 'datetime',
+        'HoraEstimadaConsumoL2'     => 'datetime',
+        'HoraRealConsumoL1'         => 'datetime',
+        'HoraRealConsumoL2'         => 'datetime',
 
-            // Booleanos
-            'GlobalGAP'                 => 'boolean',
-            'FDA'                       => 'boolean',
-        ];
-    }
+        // Booleanos
+        'GlobalGAP'                 => 'boolean',
+        'FDA'                       => 'boolean',
+    ];
 }
 

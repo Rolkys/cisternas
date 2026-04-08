@@ -24,17 +24,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Define los casts automaticos de atributos del modelo.
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'fecha_registro' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'fecha_registro' => 'datetime',
+    ];
 
     // Métodos de verificación de roles
     /**

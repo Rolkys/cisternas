@@ -28,6 +28,7 @@ Importante:
 
 Ejecuta en la raiz del proyecto:
 
+
 ```bash
 php artisan config:clear
 php artisan route:clear

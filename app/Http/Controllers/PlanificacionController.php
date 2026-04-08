@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 class PlanificacionController extends Controller
 {
     // Ruta del archivo JSON
-    private string $jsonPath;
+    private $jsonPath;
 
     /**
      * Inicializa propiedades y dependencias del componente.
@@ -83,7 +83,7 @@ class PlanificacionController extends Controller
         $this->guardar($filas);
 
         return redirect()->route('planificacion.index')
-                         ->with('success', '✅ Fila añadida.');
+                         ->with('success', 'âœ… Fila aÃ±adida.');
     }
 
     // ==================== EDIT ====================
@@ -135,7 +135,7 @@ class PlanificacionController extends Controller
         $this->guardar($filas);
 
         return redirect()->route('planificacion.index')
-                         ->with('success', '✅ Fila actualizada.');
+                         ->with('success', 'âœ… Fila actualizada.');
     }
 
     // ==================== DESTROY ====================
@@ -146,10 +146,12 @@ class PlanificacionController extends Controller
     {
         $this->soloAdmin();
         $filas = $this->leer();
-        $filas = array_values(array_filter($filas, fn($f) => $f['id'] !== $id));
+        $filas = array_values(array_filter($filas, function ($f) use ($id) {
+            return $f['id'] !== $id;
+        }));
         $this->guardar($filas);
         return redirect()->route('planificacion.index')
-                         ->with('success', '✅ Fila eliminada.');
+                         ->with('success', 'âœ… Fila eliminada.');
     }
 
     // ==================== LIMPIAR TODO ====================
@@ -161,7 +163,7 @@ class PlanificacionController extends Controller
         $this->soloAdmin();
         $this->guardar([]);
         return redirect()->route('planificacion.index')
-                         ->with('success', '✅ Planificación limpiada.');
+                         ->with('success', 'âœ… PlanificaciÃ³n limpiada.');
     }
 
     // ==================== EXPORTAR ====================
@@ -174,14 +176,14 @@ class PlanificacionController extends Controller
 
         if (empty($filas)) {
             return redirect()->route('planificacion.index')
-                             ->with('error', '❌ No hay filas para exportar.');
+                             ->with('error', 'âŒ No hay filas para exportar.');
         }
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet       = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Planificación');
+        $sheet->setTitle('PlanificaciÃ³n');
 
-        $sheet->setCellValue('A1', 'Nº Cisterna');
+        $sheet->setCellValue('A1', 'NÂº Cisterna');
         $sheet->setCellValue('B1', 'Destino');
         $sheet->setCellValue('C1', 'Fecha Consumo');
         $sheet->setCellValue('D1', 'Fecha Fab. Huelva');
@@ -230,7 +232,8 @@ class PlanificacionController extends Controller
     private function soloAdmin()
     {
         if (!auth()->user()->isAdmin()) {
-            abort(403, 'Solo administradores pueden modificar la planificación.');
+            abort(403, 'Solo administradores pueden modificar la planificaciÃ³n.');
         }
     }
 }
+

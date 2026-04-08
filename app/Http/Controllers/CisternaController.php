@@ -231,9 +231,11 @@ class CisternaController extends Controller
                 'Observaciones'     => 'nullable|string',
             ]);
 
-            $base = $cisterna->FechaConsumoMG?->format('Y-m-d')
-                 ?? $cisterna->FechaEntradaMG?->format('Y-m-d')
-                 ?? now()->format('Y-m-d');
+            $base = $cisterna->FechaConsumoMG
+                ? $cisterna->FechaConsumoMG->format('Y-m-d')
+                : ($cisterna->FechaEntradaMG
+                    ? $cisterna->FechaEntradaMG->format('Y-m-d')
+                    : now()->format('Y-m-d'));
 
             if ($request->has('HoraRealConsumoL1')) {
                 $cisterna->HoraRealConsumoL1 = $request->HoraRealConsumoL1
@@ -299,9 +301,11 @@ class CisternaController extends Controller
         ]);
 
         // CAMBIO 1: Fallback a FechaEntradaMG si no hay FechaConsumoMG
-        $base = $cisterna->FechaConsumoMG?->format('Y-m-d')
-             ?? $cisterna->FechaEntradaMG?->format('Y-m-d')
-             ?? now()->format('Y-m-d');
+        $base = $cisterna->FechaConsumoMG
+            ? $cisterna->FechaConsumoMG->format('Y-m-d')
+            : ($cisterna->FechaEntradaMG
+                ? $cisterna->FechaEntradaMG->format('Y-m-d')
+                : now()->format('Y-m-d'));
 
         if ($user->isOperario()) {
             $cisterna->HoraRealConsumoL1 = $request->HoraRealConsumoL1

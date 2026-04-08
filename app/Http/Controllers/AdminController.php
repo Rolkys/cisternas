@@ -3,7 +3,7 @@
 /**
  * DOC: Proyecto Cisternas
  * Archivo personalizado del dominio de negocio.
- * Contiene lógica específica de gestión de cisternas/usuarios/planificación.
+ * Contiene lÃ³gica especÃ­fica de gestiÃ³n de cisternas/usuarios/planificaciÃ³n.
  */
 
 namespace App\Http\Controllers;
@@ -50,7 +50,7 @@ class AdminController extends Controller
         $plainPassword = $this->generatePasswordFromEmail($validated['email']);
         if ($validated['password_generada'] !== $plainPassword) {
             return back()
-                ->withErrors(['password_generada' => 'Debes generar la contraseña con el botón antes de crear.'])
+                ->withErrors(['password_generada' => 'Debes generar la contraseÃ±a con el botÃ³n antes de crear.'])
                 ->withInput();
         }
 
@@ -65,12 +65,12 @@ class AdminController extends Controller
 
         Log::info('Usuario creado por administrador', [
             'user_email' => $validated['email'],
-            'admin_email' => auth()->user()?->email,
+            'admin_email' => auth()->check() ? auth()->user()->email : null,
         ]);
 
         return redirect()->route('admin.users')->with(
             'success',
-            "Usuario creado correctamente.<br>Contraseña generada: <b>{$plainPassword}</b>"
+            "Usuario creado correctamente.<br>ContraseÃ±a generada: <b>{$plainPassword}</b>"
         );
     }
 
@@ -166,13 +166,13 @@ class AdminController extends Controller
     }
 
     /**
-     * Genera una contraseña determinística a partir del email.
+     * Genera una contraseÃ±a determinÃ­stica a partir del email.
      */
     private function generatePasswordFromEmail(string $email): string
     {
         $localPart = trim(explode('@', $email)[0] ?? '');
         if ($localPart === '') {
-            throw new \InvalidArgumentException('El email no tiene parte local válida.');
+            throw new \InvalidArgumentException('El email no tiene parte local vÃ¡lida.');
         }
 
         $upperLocal = strtoupper($localPart);
@@ -187,29 +187,34 @@ class AdminController extends Controller
      */
     private function getRoleCapabilities(string $role): array
     {
-        return match ($role) {
-            'Root' => [
-                'Gestión total del sistema.',
-                'Puede crear, editar y eliminar usuarios.',
-                'Puede gestionar todas las cisternas y operaciones.',
-            ],
-            'Administrador' => [
-                'Gestión de usuarios (excepto restricciones del root).',
-                'Puede crear, editar y eliminar registros de negocio.',
-                'Acceso completo a paneles de administración.',
-            ],
-            'operario' => [
-                'Puede consultar información operativa.',
-                'Puede registrar o actualizar datos operativos permitidos.',
-                'No puede gestionar usuarios administradores/root.',
-            ],
-            default => [
-                'Puede ver la información permitida por su perfil.',
-                'Puede operar sobre funciones básicas habilitadas.',
-                'No puede administrar usuarios del sistema.',
-            ],
-        };
+        switch ($role) {
+            case 'Root':
+                return [
+                    'Gestion total del sistema.',
+                    'Puede crear, editar y eliminar usuarios.',
+                    'Puede gestionar todas las cisternas y operaciones.',
+                ];
+            case 'Administrador':
+                return [
+                    'Gestion de usuarios (excepto restricciones del root).',
+                    'Puede crear, editar y eliminar registros de negocio.',
+                    'Acceso completo a paneles de administracion.',
+                ];
+            case 'operario':
+                return [
+                    'Puede consultar informacion operativa.',
+                    'Puede registrar o actualizar datos operativos permitidos.',
+                    'No puede gestionar usuarios administradores/root.',
+                ];
+            default:
+                return [
+                    'Puede ver la informacion permitida por su perfil.',
+                    'Puede operar sobre funciones basicas habilitadas.',
+                    'No puede administrar usuarios del sistema.',
+                ];
+        }
     }
 }
+
 
 
