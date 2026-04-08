@@ -1,19 +1,9 @@
-# PHP 7.3.7 Migration COMPLETE ✅
+# Task Progress: Sticky Top Navbar + Gradient Background
 
-**Dashboard & Controller fixed:**
-- Column 'HoraEstimaadConsumoL1' typo
-- strftime → YEAR()
-- Syntax errors
-
-**PHP 8 → PHP 7 compatibility:**
-- All `?->` → `optional()`
-- dashboard.blade.php (6 instances)
-- show.blade.php (3 instances)
-
-**Status:** Ready for PHP 7.3.7. Run:
-```
-php artisan optimize:clear
-php artisan migrate
-```
-
-Test: /dashboard, /cisterna/create, all routes work.
+## Pending Steps (Approved Plan)
+- [x] 1. Edit `resources/views/layouts/app.blade.php`: navbar fixed-top bg-dark, main padding-top 80px, body gradient background
+  - Add `fixed-top navbar-dark bg-dark shadow-lg z-index high` to navbar
+  - Add `padding-top: 80px` to main content
+  - Add gradient background to body (`linear-gradient(135deg, warm colors)`)
+- [x] 2. Test: Navbar sticks on scroll, dark header, content no overlap
+- [x] 3. Complete task

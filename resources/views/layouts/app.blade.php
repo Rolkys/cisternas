@@ -24,18 +24,21 @@
     {{-- Estilos propios (separados del layout) --}}
     <link href="{{ asset('css/app-custom.css') }}" rel="stylesheet">
 </head>
-<body>
+<body class="min-vh-100" style="background: white;">
 
     {{-- ════════════════════════════ NAVBAR ════════════════════════════ --}}
-    <nav class="navbar navbar-expand-lg">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1060; width: 100vw;">
+
         <div class="container-fluid">
+
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2"
                 href="{{ route('cisterna.index') }}">
                 <img src="{{ asset('images/anagrama.png') }}" alt="MG" height="36">
                 <span>Control Cisternas</span>
             </a>
 
-            <div class="ms-auto d-flex align-items-center gap-3">
+<div class="ms-auto d-flex align-items-center gap-2" style="height: 100%;">
                 <button type="button" id="theme-toggle" class="btn btn-sm btn-ghost btn-theme-toggle text-white" aria-label="Cambiar tema">
                     <i id="theme-toggle-icon" class="bi bi-moon-stars-fill"></i>
                 </button>
@@ -77,7 +80,7 @@
     </div>
 
     {{-- ══════════════════════════ CONTENIDO ════════════════════════════ --}}
-    <main class="container-fluid py-3">
+<main class="container-fluid py-3" style="padding-top: 80px; margin: 0;">
         @yield('content')
     </main>
 
