@@ -34,11 +34,13 @@
     --color-secondary-hover: #d0d7de;
     --color-info: #17a2b8;
 
-    --mg-red: var(--color-danger);
-    --mg-red-dark: var(--color-danger-hover);
+    --mg-red: #DA0000;
+    --mg-red-dark: #b00000;
     --mg-navy: var(--color-text);
     --mg-black: #000000;
     --mg-bg: var(--color-bg);
+
+    --navbar-height: 72px;
 
     --row-consumida: #adebb3;
     --row-incidencia: #FF746C;
@@ -79,16 +81,91 @@ body.dark-mode {
 body {
     background: var(--mg-bg);
     color: var(--color-text);
+    /* Offset for fixed navbar */
+    padding-top: var(--navbar-height) !important;
 }
 
 html, body {
     min-height: 100%;
 }
 
-.btn {
-    transition: all 0.2s ease;
+/* ══════════════════════ NAVBAR ══════════════════════ */
+.navbar {
+    background-color: #DA0000 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1060 !important;
+    margin: 0 !important;
+    width: 100vw !important;
+    min-height: var(--navbar-height) !important;
 }
 
+/* All navbar buttons - consistent height and alignment */
+.navbar .btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    height: 44px !important;
+    white-space: nowrap !important;
+    font-size: 1rem !important;
+    padding: 0.5rem 1rem !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+}
+
+.navbar .btn-theme-toggle {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    font-size: 1.2rem !important;
+}
+
+.navbar .ms-auto {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.5rem !important;
+    flex-wrap: wrap !important;
+}
+
+.navbar .navbar-brand {
+    font-size: 1.3rem !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Main content offset */
+main {
+    padding-top: 1rem !important;
+}
+
+/* ══════════════════════ GENERAL BUTTONS ══════════════════════ */
+.btn {
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+/* Table action buttons - smaller, aligned */
+.table .btn,
+.table .btn-sm {
+    height: 32px !important;
+    padding: 0 0.5rem !important;
+    font-size: 0.82rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    line-height: 1 !important;
+}
+
+/* ══════════════════════ CARD ══════════════════════ */
 .card {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -155,67 +232,28 @@ body.dark-mode .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
 
-/* NAVBAR - NEGRO */
-.navbar {
-    background-color: #000000 !important;
-/*    position: fixed !important; */
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    z-index: 1060 !important;
-    margin: 0 !important;
-    width: 100vw !important;
-    height: 60px !important;
-}
-main {
-    padding-top: 70px !important;
-}
-
-
 .card-header {
     background-color: #000000 !important;
     color: #ffffff !important;
 }
 
-.navbar-brand,
-.nav-link {
+.navbar-brand:hover,
+.nav-link:hover {
+    color: rgba(255,255,255,0.8) !important;
+}
+
+.navbar .btn-ghost {
     color: #ffffff !important;
 }
 
-.navbar .ms-auto {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 0.5rem !important;
-    height: 100% !important;
-    padding: 0.5rem 0 !important;
-}
-.navbar .btn {
-    margin-left: 0 !important;
-    white-space: nowrap !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    height: 100% !important;
-    line-height: 1.2 !important;
-}
-.navbar .btn-sm {
-    padding: 0.25rem 0.5rem !important;
-    font-size: 0.875rem !important;
-}
-.navbar-brand:hover,
-.nav-link:hover {
-    color: var(--color-view) !important;
-}
-.navbar .btn-ghost {
-    color: #ecf0f1 !important;
-}
+/* ══════════════════════ BUTTON COLORS ══════════════════════ */
 
-/* BOTONES - VER (AZUL) */
+/* PRIMARY - BLUE */
 .btn-primary {
     background-color: var(--color-view) !important;
     border-color: var(--color-view) !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    color: #ffffff !important;
 }
 .btn-primary:hover,
 .btn-primary:focus {
@@ -242,7 +280,7 @@ main {
     color: #ffffff !important;
 }
 
-/* BOTON VER - AZUL */
+/* VIEW - BLUE */
 .btn-outline-view {
     color: var(--color-view) !important;
     border-color: var(--color-view) !important;
@@ -258,7 +296,7 @@ main {
     color: #ffffff !important;
 }
 
-/* BOTON EDITAR - AMARILLO/NARANJA */
+/* EDIT - YELLOW/ORANGE */
 .btn-warning,
 .btn-outline-warning {
     color: var(--color-edit) !important;
@@ -283,10 +321,11 @@ main {
     color: #212529 !important;
 }
 
-/* BOTON ELIMINAR - ROJO */
+/* DELETE - RED */
 .btn-danger {
     background-color: var(--color-danger) !important;
     border-color: var(--color-danger) !important;
+    color: #ffffff !important;
 }
 .btn-danger:hover,
 .btn-danger:focus {
@@ -313,10 +352,11 @@ main {
     color: #ffffff !important;
 }
 
-/* BOTON REGISTRAR CONSUMO - VERDE */
+/* CONSUMO - GREEN */
 .btn-consumo {
     color: var(--color-success) !important;
     border-color: var(--color-success) !important;
+    background-color: transparent !important;
 }
 .btn-consumo .bi-clock {
     color: inherit !important;
@@ -333,10 +373,11 @@ main {
     color: #ffffff !important;
 }
 
-/* BOTONES POSITIVOS */
+/* SUCCESS */
 .btn-success {
     background-color: var(--color-success) !important;
     border-color: var(--color-success) !important;
+    color: #ffffff !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 .btn-success:hover,
@@ -364,7 +405,7 @@ main {
     color: #ffffff !important;
 }
 
-/* BOTONES SECUNDARIOS E INFO */
+/* SECONDARY */
 .btn-secondary {
     background-color: var(--color-secondary) !important;
     border-color: var(--color-secondary) !important;
@@ -389,6 +430,8 @@ main {
     border-color: var(--color-secondary) !important;
     color: var(--color-text) !important;
 }
+
+/* INFO */
 .btn-info,
 .btn-outline-info {
     color: var(--color-info) !important;
@@ -409,22 +452,17 @@ main {
     color: #ffffff !important;
 }
 
-/* BOTON GHOST */
+/* GHOST */
 .btn-ghost {
     background-color: transparent !important;
     border: 1px solid transparent !important;
-    color: var(--color-view) !important;
+    color: #ffffff !important;
 }
 .btn-ghost:hover,
 .btn-ghost:focus,
 .btn-ghost:active {
-    background-color: rgba(0,0,0,0.05) !important;
-    color: var(--color-view) !important;
-}
-body.dark-mode .btn-ghost:hover,
-body.dark-mode .btn-ghost:focus,
-body.dark-mode .btn-ghost:active {
-    background-color: rgba(255,255,255,0.08) !important;
+    background-color: rgba(255,255,255,0.15) !important;
+    color: #ffffff !important;
 }
 
 body.dark-mode .bg-light {
@@ -436,7 +474,7 @@ body.dark-mode .table-hover > tbody > tr:not(.row-consumida):not(.row-incidencia
     background-color: #252525 !important;
 }
 
-/* ESTADO DISABLED */
+/* DISABLED */
 .btn:disabled,
 .btn.disabled {
     background-color: #bdc3c7 !important;
@@ -447,30 +485,30 @@ body.dark-mode .table-hover > tbody > tr:not(.row-consumida):not(.row-incidencia
     opacity: 1 !important;
 }
 
-/* BOTON TOGGLE TEMA */
+/* THEME TOGGLE */
 .btn-theme-toggle {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.2rem;
 }
 
-/* TABLA */
+/* TABLE */
 .table thead {
     background-color: var(--mg-navy);
     color: #fff;
 }
 
-/* FILAS POR ESTADO */
+/* ROW COLORS */
 .table > tbody > tr.row-consumida > td { background-color: var(--row-consumida) !important; }
 .table > tbody > tr.row-incidencia > td { background-color: var(--row-incidencia) !important; }
 .table > tbody > tr.row-hoy > td { background-color: var(--row-hoy) !important; }
 .table > tbody > tr.row-futura > td { background-color: var(--row-futura) !important; }
 .table > tbody > tr.row-pendiente > td { background-color: var(--row-pendiente) !important; }
 
-/* Fija el color de fila usando variables internas de Bootstrap para evitar blanqueo */
 .table > tbody > tr.row-consumida {
     --bs-table-bg: var(--row-consumida);
     --bs-table-accent-bg: var(--row-consumida);
@@ -502,7 +540,6 @@ body.dark-mode .table-hover > tbody > tr:not(.row-consumida):not(.row-incidencia
     --bs-table-striped-bg: var(--row-pendiente);
 }
 
-/* Evita que Bootstrap pinte de blanco las filas de estado al hover */
 .table-hover > tbody > tr.row-consumida:hover > td {
     background-color: var(--row-consumida) !important;
     box-shadow: inset 0 0 0 9999px var(--row-consumida) !important;
@@ -535,7 +572,7 @@ body.dark-mode .table-hover > tbody > tr:not(.row-consumida):not(.row-incidencia
 .row-futura { background-color: var(--row-futura) !important; }
 .row-pendiente { background-color: var(--row-pendiente) !important; }
 
-/* PAGINACIÓN */
+/* PAGINATION */
 .page-link {
     color: var(--color-view) !important;
     background-color: var(--color-surface) !important;
@@ -555,13 +592,14 @@ body.dark-mode .page-item.disabled .page-link {
 /* LOGIN */
 body.login-page {
     background-color: var(--color-bg) !important;
+    padding-top: 0 !important;
 }
 
 .text-muted {
     color: var(--color-text-muted) !important;
 }
 
-/* LEYENDA */
+/* LEGEND */
 .legend-box {
     display: inline-block;
     width: 14px;
@@ -580,7 +618,7 @@ body.login-page {
     color: var(--color-text-muted);
 }
 
-/* INDEX: tabla siempre negra, sin cambio al hover */
+/* INDEX dark mode table */
 body.dark-mode .table-index-cisternas > :not(caption) > * > * {
     background-color: #121212 !important;
     color: #ecf0f1 !important;
@@ -595,4 +633,12 @@ body.dark-mode .table-index-cisternas.table-hover > tbody > tr:hover > * {
     background-color: #121212 !important;
     box-shadow: inset 0 0 0 9999px #121212 !important;
     --bs-table-accent-bg: #121212 !important;
+}
+
+/* SUB-TOPBAR (used in some views) */
+.sub-topbar {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.5rem 0;
+    color: var(--color-text);
 }

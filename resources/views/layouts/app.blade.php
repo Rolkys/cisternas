@@ -28,46 +28,44 @@
 
     {{-- ════════════════════════════ NAVBAR ════════════════════════════ --}}
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1060; width: 100vw;">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1060; width: 100vw; background-color: #DA0000 !important; min-height: 72px;">
 
-        <div class="container-fluid">
+        <div class="container-fluid px-3">
 
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2"
-                href="{{ route('cisterna.index') }}">
-                <img src="{{ asset('images/anagrama.png') }}" alt="MG" height="36">
+                href="{{ route('cisterna.index') }}"
+                style="font-size: 1.3rem;">
+                <img src="{{ asset('images/anagrama.png') }}" alt="MG" height="44">
                 <span>Control Cisternas</span>
             </a>
 
-<div class="ms-auto d-flex align-items-center gap-2" style="height: 100%;">
-                <button type="button" id="theme-toggle" class="btn btn-sm btn-ghost btn-theme-toggle text-white" aria-label="Cambiar tema">
+            <div class="ms-auto d-flex align-items-center gap-2 flex-wrap" style="height: 100%;">
+                <button type="button" id="theme-toggle" class="btn btn-sm btn-ghost text-white btn-theme-toggle" aria-label="Cambiar tema" style="font-size: 1.2rem; width: 44px; height: 44px;">
                     <i id="theme-toggle-icon" class="bi bi-moon-stars-fill"></i>
                 </button>
                 @auth
-                    <span class="text-white small">{{ auth()->user()->email }}</span>
-                    <span class="badge bg-secondary">{{ auth()->user()->role }}</span>
+                    <span class="text-white fw-semibold" style="font-size: 1rem;">{{ auth()->user()->email }}</span>
+                    <span class="badge fs-6 px-3 py-2" style="background-color: rgba(0,0,0,0.3);">{{ auth()->user()->role }}</span>
 
                     @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.users') }}" class="btn btn-sm btn-outline-light">
-                            <i class="bi bi-people"></i> Usuarios
+                        <a href="{{ route('admin.users') }}" class="btn btn-outline-light btn-lg" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                            <i class="bi bi-people"></i> <span class="d-none d-md-inline">Usuarios</span>
                         </a>
                     @endif
-
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button class="btn btn-sm btn-outline-light">
-                            <i class="bi bi-box-arrow-right"></i> Salir
-                        </button>
-                    </form>
+                    
+                    <button type="button" class="btn btn-outline-light btn-lg" style="font-size: 1rem; padding: 0.5rem 1rem;" >
+                        <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline">Salir</span>
+                    </button>
                 @endauth
             </div>
         </div>
     </nav>
 
     {{-- ════════════════════════ NOTIFICACIONES ════════════════════════ --}}
-    <div class="container-fluid mt-3">
+    <div class="container-fluid" style="padding-top: 10px;">
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
+                {!! session('success') !!}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
@@ -80,7 +78,7 @@
     </div>
 
     {{-- ══════════════════════════ CONTENIDO ════════════════════════════ --}}
-<main class="container-fluid py-3" style="padding-top: 80px; margin: 0;">
+    <main class="container-fluid py-3" style="padding-top: 10px !important; margin: 0;">
         @yield('content')
     </main>
 
