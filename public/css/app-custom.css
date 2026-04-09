@@ -45,7 +45,7 @@
     --color-success-hover: #27ae60;
     --color-success-active: #1e8449;
 
-    --color-bg: #f8f9fa;
+    --color-bg: #FFFFF0;
     --color-surface: #ffffff;
     --color-border: #e0e0e0;
     --color-text: #2c3e50;
@@ -59,7 +59,7 @@
     --mg-red-dark: #b00000;
     --mg-navy: var(--color-text);
     --mg-black: #000000;
-    --mg-bg: var(--color-bg);
+    --mg-bg: #FFFFF0;
 
     --navbar-height: 72px;
 

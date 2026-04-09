@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #e10734 !important; color: #ffffff !important; border-color: #e10734 !important;">
                     <h4 class="mb-0">🔍 Detalles de Cisterna #{{ $cisterna->NumeroCisterna }}</h4>
                     <div>
                         @if(!auth()->user()->isOperario())
@@ -71,7 +71,7 @@
                                 </tr>
                                 <tr>
                                     <th>Fecha Consumo MG</th>
-                                    <td>{{ optional($cisterna->FechaConsumoMG)->format('d/m/Y H:m') ?? '—' }}</td>
+                                    <td>{{ optional($cisterna->FechaConsumoMG)->format('d/m/Y H:i') ?? '—' }}</td>
                                 </tr>
                                 <tr>
                                     <th>Fecha Fabricación Huelva</th>
@@ -79,7 +79,7 @@
                                 </tr>
                                 <tr>
                                     <th>Hora Salida</th>
-                                    <td>{{ optional($cisterna->HoraSalida)->format('d/m/Y H:m') ?? '—' }}</td>
+                                    <td>{{ optional($cisterna->HoraSalida)->format('d/m/Y H:i') ?? '—' }}</td>
                                 </tr>
                                 <tr>
                                     <th>Fecha Entrada MG</th>
@@ -95,11 +95,11 @@
                             <table class="table table-bordered">
                                 <tr>
                                     <th width="30%">Hora Real Consumo L1</th>
-                                    <td>{{ $cisterna->HoraRealConsumoL1 ? \Carbon\Carbon::parse($cisterna->HoraRealConsumoL1)->format('H:m') : '—' }}</td>
+$cisterna->HoraRealConsumoL1->format('H:i')
                                 </tr>
                                 <tr>
                                     <th>Hora Real Consumo L2</th>
-                                    <td>{{ $cisterna->HoraRealConsumoL2 ? \Carbon\Carbon::parse($cisterna->HoraRealConsumoL2)->format('H:m') : '—' }}</td>
+$cisterna->HoraRealConsumoL2->format('H:i')
                                 </tr>
                                 <tr>
                                     <th>Observaciones</th>

@@ -131,10 +131,10 @@
                     <td>{{ $cisterna->Conductor }}</td>
                     <td>{{ $cisterna->Telefono ?: '—' }}</td>
                     <td>{{ $cisterna->FechaConsumoMG ? $cisterna->FechaConsumoMG->format('d/m/Y') : '-' }}</td>
-                    <td>{{ $cisterna->HoraEstimadaConsumoL1 ? $cisterna->HoraEstimadaConsumoL1->format('H:m') : '--' }}</td>
-                    <td>{{ $cisterna->HoraRealConsumoL1 ? $cisterna->HoraRealConsumoL1->format('H:m') : '--' }}</td>
-                    <td>{{ $cisterna->HoraEstimadaConsumoL2 ? $cisterna->HoraEstimadaConsumoL2->format('H:m') : '--' }}</td>
-                    <td>{{ $cisterna->HoraRealConsumoL2 ? $cisterna->HoraRealConsumoL2->format('H:m') : '--' }}</td>
+                    <td>{{ $cisterna->HoraEstimadaConsumoL1 ? $cisterna->HoraEstimadaConsumoL1->format('H:i') : '--' }}</td>
+                    <td>{{ $cisterna->HoraRealConsumoL1 ? $cisterna->HoraRealConsumoL1->format('H:i') : '--' }}</td>
+                    <td>{{ $cisterna->HoraEstimadaConsumoL2 ? $cisterna->HoraEstimadaConsumoL2->format('H:i') : '--' }}</td>
+                    <td>{{ $cisterna->HoraRealConsumoL2 ? $cisterna->HoraRealConsumoL2->format('H:i') : '--' }}</td>
                     <td>
                         @if($cisterna->FDA === true)
                             <span class="badge bg-success">Sí</span>

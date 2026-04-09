@@ -87,7 +87,7 @@
     {{-- Cisternas programadas para hoy --}}
     <div class="col-md-7">
         <div class="card shadow-sm h-100">
-            <div class="card-header fw-bold">
+            <div class="card-header fw-bold" style="background-color: #e10734 !important; color: #ffffff !important; border-color: #e10734 !important;">
                 <i class="bi bi-calendar-check"></i> Programadas para hoy
             </div>
             <div class="card-body p-0">
@@ -111,8 +111,8 @@
                                 <td>{{ $c->OF }}</td>
                                 <td>{{ str_pad($c->NumeroCisterna, 4, '0', STR_PAD_LEFT) }}</td>
                                 <td>{{ $c->Conductor }}</td>
-                                <td>{{ optional($c->HoraEstimadaConsumoL1)->format('H:m') ?? '—' }}</td>
-                                <td>{{ optional($c->HoraEstimadaConsumoL2)->format('H:m') ?? '—' }}</td>
+                                <td>{{ optional($c->HoraEstimadaConsumoL1)->format('H:i') ?? '—' }}</td>
+                                <td>{{ optional($c->HoraEstimadaConsumoL2)->format('H:i') ?? '—' }}</td>
                                 <td>
                                     @if($esTamariteHoy || $c->HoraRealConsumoL1 || $c->HoraRealConsumoL2)
                                         <span class="badge bg-success">Consumida</span>
@@ -139,7 +139,7 @@
     {{-- Últimas añadidas --}}
     <div class="col-md-5">
         <div class="card shadow-sm h-100">
-            <div class="card-header fw-bold">
+            <div class="card-header fw-bold" style="background-color: #e10734 !important; color: #ffffff !important; border-color: #e10734 !important;">
                 <i class="bi bi-clock-history"></i> Últimas añadidas
             </div>
             <div class="card-body p-0">
@@ -171,7 +171,7 @@
     <div class="row g-3 mt-2">
         <div class="col-12">
             <div class="card shadow-sm">
-                <div class="card-header fw-bold">
+                <div class="card-header fw-bold" style="background-color: #e10734 !important; color: #ffffff !important; border-color: #e10734 !important;">
                     <i class="bi bi-calendar3"></i> Cisternas por año
                 </div>
                 <div class="card-body">
@@ -233,8 +233,8 @@
                                             <td>{{ $cisterna->Origen ?: '—' }}</td>
                                             <td>{{ $cisterna->Destino ?: '—' }}</td>
                                             <td>{{ optional($cisterna->FechaConsumoMG)->format('d/m/Y') ?? '—' }}</td>
-                                            <td>{{ optional($cisterna->HoraRealConsumoL1)->format('H:m') ?? '—' }}</td>
-                                            <td>{{ optional($cisterna->HoraRealConsumoL2)->format('H:m') ?? '—' }}</td>
+                                            <td>{{ optional($cisterna->HoraRealConsumoL1)->format('H:i') ?? '—' }}</td>
+                                            <td>{{ optional($cisterna->HoraRealConsumoL2)->format('H:i') ?? '—' }}</td>
                                             <td>
                                                 @if($esTamarite || $cisterna->HoraRealConsumoL1 || $cisterna->HoraRealConsumoL2)
                                                     <span class="badge bg-success">Consumida</span>

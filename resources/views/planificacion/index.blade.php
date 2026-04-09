@@ -41,7 +41,7 @@
 {{-- Formulario añadir — solo Admin/Root --}}
 @if(auth()->user()->isAdmin())
 <div class="card shadow-sm mb-4">
-    <div class="card-header fw-bold">Nueva fila</div>
+    <div class="card-header fw-bold" style="background-color: #e10734 !important; color: #ffffff !important; border-color: #e10734 !important;">Nueva fila</div>
     <div class="card-body">
         <form method="POST" action="{{ route('planificacion.store') }}">
             @csrf

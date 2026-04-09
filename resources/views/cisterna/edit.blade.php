@@ -6,7 +6,7 @@
     <div class="row justify-content-center">
         <div class="col-md-10">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header" style="background-color: #e10734 !important; color: #ffffff !important; border-color: #e10734 !important;">
                     <h4 class="mb-0">
                         {{ auth()->user()->isOperario() ? '✏️ Editar Consumo' : '✏️ Editar Cisterna' }}
                     </h4>
