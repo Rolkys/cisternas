@@ -33,8 +33,8 @@
                         @csrf
                         @method('PUT')
 
-                        @if(!$isOperario)
-                            {{-- ==================== CAMPOS EDITABLES POR ADMIN, ROOT Y USER ==================== --}}
+@if(!$isOperario)
+                            {{-- Si NO operario: muestra todos campos editables (admin/root/user) --}}
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="OF" class="form-label">OF *</label>
@@ -167,8 +167,8 @@
 
                             <hr class="my-4">
 
-                        @else
-                            {{-- ==================== CAMPOS BLOQUEADOS PARA OPERARIO ==================== --}}
+@else
+                            {{-- Si operario: campos bloqueados, solo consumo editable --}}
                             <div class="alert alert-info">
                                 <i class="bi bi-info-circle"></i> Como operario, solo puedes editar los campos de consumo y observaciones.
                             </div>

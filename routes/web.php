@@ -10,6 +10,9 @@ Route::get('/', function () {
     return redirect()->route('cisterna.index');
 });
 
+/**
+ * Grupo rutas protegidas por auth (cisternas/planif/admin/profile).
+ */
 Route::middleware('auth')->group(function () {
 
     Route::prefix('planificacion')->name('planificacion.')->group(function () {

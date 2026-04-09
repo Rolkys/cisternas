@@ -13,6 +13,9 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
+/**
+ * Servicio import cisternas desde Excel (preview + import).
+ */
 class ExcelImportService
 {
     // PREVIEW

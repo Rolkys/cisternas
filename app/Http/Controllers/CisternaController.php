@@ -14,8 +14,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CisternaController extends Controller
+/**
+ * CRUD + bulk operations for cisternas management dashboard.
+ */
 {
-    public function index(Request $request)
+/**
+ * Muestra lista de cisternas con filtros por año, texto y fecha.
+ * @param Request $request Filtros GET
+ * @return View Lista paginada
+ */
+public function index(Request $request)
     {
         $query = Cisterna::query();
         $year = $request->input('year');
@@ -131,18 +139,30 @@ class CisternaController extends Controller
         return view('cisterna.show', compact('cisterna'));
     }
 
-    public function edit(Cisterna $cisterna)
+/**
+ * Vista formulario editar cisterna.
+ * @param Cisterna $cisterna Modelo cisterna
+ * @return View Form edit
+ */
+public function edit(Cisterna $cisterna)
     {
         return view('cisterna.edit', compact('cisterna'));
     }
 
-    public function update(Request $request, Cisterna $cisterna)
+/**
+ * Actualiza cisterna (admin/user/root) or consumo (operario).
+ * @param Request $request Datos update
+ * @param Cisterna $cisterna Modelo
+ * @return Redirect index + msg
+ */
+public function update(Request $request, Cisterna $cisterna)
     {
         $user = Auth::user();
 
         if ($user->isRoot() || $user->isAdmin() || $user->isUser()) {
 $request->validate([
-            'numeroCamion'   => 'required|integer',
+                'OF'             => 'required|integer',
+                'NumeroCisterna' => 'required|integer',
                 'Conductor'      => 'required|string|max:255',
                 'Origen'         => 'nullable|string|max:255',
                 'Destino'        => 'nullable|string|max:255',
@@ -158,7 +178,7 @@ $request->validate([
             ]);
 
 $data = $request->all();
-            $data['OF'] = $data['NumeroCisterna'] = $request->numeroCamion;
+            // OF and NumeroCisterna from form directly
             $data = $this->syncFechasConsumoEntrada($data);
             $data = $this->autoConsumir($data, $cisterna);
             $cisterna->update($data);
@@ -180,16 +200,12 @@ $data = $request->all();
                 ? $cisterna->FechaEntradaMG->format('Y-m-d')
                     : Carbon::now()->format('Y-m-d'));
 
-            if ($request->has('HoraRealConsumoL1')) {
-                $cisterna->HoraRealConsumoL1 = $request->HoraRealConsumoL1
-                    ? $base . ' ' . $request->HoraRealConsumoL1 . ':00'
-                    : null;
+            if ($request->has('HoraRealConsumoL1') && $request->HoraRealConsumoL1) {
+                $cisterna->HoraRealConsumoL1 = Carbon::parse($base . ' ' . $request->HoraRealConsumoL1 . ':00')->format('Y-m-d H:i:s');
             }
 
-            if ($request->has('HoraRealConsumoL2')) {
-                $cisterna->HoraRealConsumoL2 = $request->HoraRealConsumoL2
-                    ? $base . ' ' . $request->HoraRealConsumoL2 . ':00'
-                    : null;
+            if ($request->has('HoraRealConsumoL2') && $request->HoraRealConsumoL2) {
+                $cisterna->HoraRealConsumoL2 = Carbon::parse($base . ' ' . $request->HoraRealConsumoL2 . ':00')->format('Y-m-d H:i:s');
             }
 
             if ($request->has('Observaciones')) {
@@ -205,7 +221,12 @@ $data = $request->all();
         abort(403, 'No tienes permisos para editar');
     }
 
-    public function destroy(Cisterna $cisterna)
+/**
+ * Elimina cisterna (solo admin/root).
+ * @param Cisterna $cisterna Modelo
+ * @return Redirect index + msg
+ */
+public function destroy(Cisterna $cisterna)
     {
         $user = Auth::user();
         
@@ -225,7 +246,13 @@ $data = $request->all();
                         ->with('success', '✅ Cisterna eliminada correctamente.');
     }
 
-    public function updateConsumo(Request $request, Cisterna $cisterna)
+/**
+ * Actualiza horas reales consumo cisterna (operarios).
+ * @param Request $request Horas reales/observaciones
+ * @param Cisterna $cisterna Modelo
+ * @return Redirect index + msg
+ */
+public function updateConsumo(Request $request, Cisterna $cisterna)
     {
         $user = Auth::user();
         
@@ -242,11 +269,11 @@ $data = $request->all();
                 : Carbon::now()->format('Y-m-d'));
 
         $cisterna->HoraRealConsumoL1 = $request->HoraRealConsumoL1
-            ? $base . ' ' . $request->HoraRealConsumoL1 . ':00'
+            ? Carbon::parse($base . ' ' . $request->HoraRealConsumoL1 . ':00')->format('Y-m-d H:i:s')
             : null;
 
         $cisterna->HoraRealConsumoL2 = $request->HoraRealConsumoL2
-            ? $base . ' ' . $request->HoraRealConsumoL2 . ':00'
+            ? Carbon::parse($base . ' ' . $request->HoraRealConsumoL2 . ':00')->format('Y-m-d H:i:s')
             : null;
 
         $cisterna->Observaciones = $request->Observaciones ?? $cisterna->Observaciones;
@@ -257,7 +284,11 @@ $data = $request->all();
                         ->with('success', '✅ Consumo Actualizado Correctamente');
     }
 
-    public function bulkUpload()
+/**
+ * Vista upload Excel bulk cisternas (admin/root).
+ * @return View bulk upload
+ */
+public function bulkUpload()
     {
         $user = Auth::user();
         
@@ -268,7 +299,12 @@ $data = $request->all();
         return view('cisterna.bulk');
     }
 
-    public function bulkStore(Request $request)
+/**
+ * Procesa upload Excel, preview en session (admin/root).
+ * @param Request $request Archivo Excel
+ * @return Redirect bulk.confirm
+ */
+public function bulkStore(Request $request)
     {
         $user = Auth::user();
         
@@ -294,7 +330,11 @@ $data = $request->all();
         return redirect()->route('cisterna.bulk.confirm');
     }
 
-    public function bulkConfirm()
+/**
+ * Vista confirm preview bulk Excel (admin/root).
+ * @return View bulk_confirm or redirect error
+ */
+public function bulkConfirm()
     {
         $user = Auth::user();
         
@@ -312,7 +352,12 @@ $data = $request->all();
         return view('cisterna.bulk_confirm', compact('preview'));
     }
 
-    public function bulkConfirmStore(Request $request)
+/**
+ * Importa cisternas desde Excel preview (selected/all, admin/root).
+ * @param Request $request Filas seleccionadas/editadas
+ * @return Redirect index + stats msg
+ */
+public function bulkConfirmStore(Request $request)
     {
         $user = Auth::user();
  
@@ -459,7 +504,12 @@ $data = $request->all();
                             ->with('success', "✅ {$imported} cisternas importadas. {$omitidos} omitidas.");
     }
 
-    public function export(Request $request)
+/**
+ * Exporta cisternas a Excel con filtros.
+ * @param Request $request Filtros año/texto/fecha
+ * @return Download Excel file
+ */
+public function export(Request $request)
     {
         $query = Cisterna::query();
         $year = $request->input('year');
@@ -499,7 +549,12 @@ $data = $request->all();
         return response()->download($filePath)->deleteFileAfterSend(true);
     }
 
-    public function dashboard(Request $request)
+/**
+ * Dashboard estadisticas cisternas con filtros fecha.
+ * @param Request $request Filtros desde/hasta/año
+ * @return View dashboard metrics/tabla
+ */
+public function dashboard(Request $request)
     {
         $desde = $request->filled('desde') ? $request->desde : null;
         $hasta = $request->filled('hasta') ? $request->hasta : null;
@@ -586,12 +641,23 @@ $data = $request->all();
         ));
     }
 
-    private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
+/**
+ * Hook para auto-consumo (actualmente no-op).
+ * @param array $data Datos cisterna
+ * @param Cisterna|null $cisterna Existente
+ * @return array Datos procesados
+ */
+private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
     {
         return $data;
     }
 
-    private function syncFechasConsumoEntrada(array $data): array
+/**
+ * Sincroniza FechaEntradaMG = FechaConsumoMG si existe.
+ * @param array $data Datos cisterna
+ * @return array Datos sincronizados
+ */
+private function syncFechasConsumoEntrada(array $data): array
     {
         $fechaConsumo = $data['FechaConsumoMG'] ?? null;
         $data['FechaEntradaMG'] = $fechaConsumo ?: null;
@@ -599,7 +665,12 @@ $data = $request->all();
         return $data;
     }
 
-    private function normalizeImportConsumptionHours(array $data): array
+/**
+ * Normaliza horas consumo import Excel (null if empty).
+ * @param array $data Datos import
+ * @return array Horas normalizadas
+ */
+private function normalizeImportConsumptionHours(array $data): array
     {
         $keys = [
             'HoraEstimadaConsumoL1',
@@ -618,7 +689,11 @@ $data = $request->all();
         return $data;
     }
 
-    public function destroyAll()
+/**
+ * Elimina TODAS cisternas (solo admin/root).
+ * @return Redirect index + msg
+ */
+public function destroyAll()
     {
         if (!auth()->user()->isRoot() && !auth()->user()->isAdmin()) {
             abort(403, 'No autorizado');

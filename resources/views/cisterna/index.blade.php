@@ -9,51 +9,46 @@
 @endphp
 
 
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-    <h4 class="mb-0"><i class="bi bi-list-ul"></i> Listado de Cisternas</h4>
-    <div class="d-grid gap-2" style="grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; max-width: 780px;">
-        <div class="small" style="grid-column: 1 / -1;">
-            {{ $cisternas->withQueryString()->links('pagination::bootstrap-4') }}
-        </div>
-        @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
-            <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-success btn-sm w-100">
-                <i class="bi bi-file-earmark-excel"></i>
-                <span class="d-none d-md-inline">Importar Excel</span>
-            </a>
-        @endif
-        @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
-            <a href="{{ route('cisterna.create') }}" class="btn btn-primary btn-sm w-100">
-                <i class="bi bi-plus-lg"></i>
-                <span class="d-none d-md-inline">Nueva Cisterna</span>
-            </a>
-        @endif
-        <a href="{{ route('cisterna.export', request()->query()) }}" class="btn btn-outline-primary btn-sm w-100">
-            <i class="bi bi-download"></i>
-            <span class="d-none d-md-inline">Exportar Excel</span>
-        </a>
-        <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary btn-sm w-100">
-            <i class="bi bi-speedometer2"></i>
-            <span class="d-none d-md-inline">Dashboard</span>
-        </a>
-        <a href="{{ route('planificacion.index') }}" class="btn btn-outline-info btn-sm w-100">
-            <i class="bi bi-calendar2-week"></i>
-            <span class="d-none d-md-inline">Planificación</span>
-        </a>
-        @if(auth()->user()->isRoot() || auth()->user()->isAdmin())
-            <form method="POST" 
-                action="{{ route('cisterna.destroyAll') }}" 
-                class="w-100"
-                onsubmit="return confirm('¿Eliminar TODAS las cisternas? Esta acción no se puede deshacer.')">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                    <i class="bi bi-trash3"></i>
-                    <span class="d-none d-md-inline">Eliminar Todas</span>
-                </button>
-            </form>
-        @endif
-        
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    {{-- Título a la izquierda --}}
+    <h4 class="mb-0">
+        <i class="bi bi-list-ul"></i> Listado de Cisternas
+    </h4>
+
+    {{-- Paginación en el centro --}}
+    <div class="small mx-auto">
+        {{ $cisternas->withQueryString()->links('pagination::bootstrap-4') }}
     </div>
+
+        {{-- Grid de botones con columnas de ancho fijo --}}
+        <div class="d-grid gap-2" style="grid-template-columns: repeat(3, 1fr); max-width: 700px;">
+            @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
+                <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-success w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                    <i class="bi bi-file-earmark-excel"></i>
+                    <span class="d-none d-md-inline ms-1">Importar Excel</span>
+                </a>
+            @endif
+            @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
+                <a href="{{ route('cisterna.create') }}" class="btn btn-primary w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                    <i class="bi bi-plus-lg"></i>
+                    <span class="d-none d-md-inline ms-1">Nueva Cisterna</span>
+                </a>
+            @endif
+            <a href="{{ route('cisterna.export', request()->query()) }}" class="btn btn-outline-primary w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                <i class="bi bi-download"></i>
+                <span class="d-none d-md-inline ms-1">Exportar Excel</span>
+            </a>
+            <a href="{{ route('dashboard') }}" 
+                class="btn btn-dashboard w-100" 
+                style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="d-none d-md-inline ms-1">Dashboard</span>
+            </a>
+            <a href="{{ route('planificacion.index') }}" class="btn btn-outline-info w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                <i class="bi bi-calendar2-week"></i>
+                <span class="d-none d-md-inline ms-1">Planificación</span>
+            </a>
+        </div>
 </div>
 
 {{-- Filtros --}}
@@ -173,10 +168,10 @@
                         <button class="btn btn-sm btn-consumo"
                                 title="Registrar consumo"
                                 data-id="{{ $cisterna->IdCisterna }}"
-                                data-hec-l1="{{ $cisterna->HoraEstimadaConsumoL1 ? $cisterna->HoraEstimadaConsumoL1->format('H:m') : '' }}"
-                                data-hrc-l1="{{ $cisterna->HoraRealConsumoL1 ? $cisterna->HoraRealConsumoL1->format('H:m') : '' }}"
-                                data-hec-l2="{{ $cisterna->HoraEstimadaConsumoL2 ? $cisterna->HoraEstimadaConsumoL2->format('H:m') : '' }}"
-                                data-hrc-l2="{{ $cisterna->HoraRealConsumoL2 ? $cisterna->HoraRealConsumoL2->format('H:m') : '' }}">
+                                data-hec-l1="{{ $cisterna->HoraEstimadaConsumoL1 ? $cisterna->HoraEstimadaConsumoL1->format('H:i') : '' }}"
+                                data-hrc-l1="{{ optional($cisterna->HoraRealConsumoL1)->format('H:i') ?? '' }}"
+                                data-hec-l2="{{ optional($cisterna->HoraEstimadaConsumoL2)->format('H:i') ?? '' }}"
+                                data-hrc-l2="{{ optional($cisterna->HoraRealConsumoL2)->format('H:i') ?? '' }}">
                             <i class="bi bi-clock"></i>
                         </button>
                         <a href="{{ route('cisterna.show', $cisterna->IdCisterna) }}"
@@ -206,7 +201,7 @@
 
             @empty
                 <tr>
-                    <td colspan="17" class="text-center text-muted">
+                    <td colspan="15" class="text-center text-muted">
                         No hay cisternas registradas.
                     </td>
                 </tr>
@@ -291,6 +286,9 @@
 </div>
 
 <script>
+/**
+ * Init event listeners for consumo buttons (open modal).
+ */
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.btn-consumo').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -307,4 +305,3 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 @endsection
-

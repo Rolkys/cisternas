@@ -28,7 +28,7 @@
 
     {{-- ════════════════════════════ NAVBAR ════════════════════════════ --}}
 
-    <nav class="navbar navbar-expand-lg navbar-dark shadow" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1060; width: 100vw; background-color: #DA0000 !important; min-height: 72px;">
+    <nav class="navbar navbar-expand-lg navbar-dark shadow" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1060; width: 100vw; background-color: #e10734 !important; min-height: 72px;">
 
         <div class="container-fluid px-3">
 
@@ -53,9 +53,17 @@
                         </a>
                     @endif
                     
-                    <button type="button" class="btn btn-outline-light btn-lg" style="font-size: 1rem; padding: 0.5rem 1rem;" >
+                    <a href="{{ route('login') }}" 
+                    class="btn btn-outline-light btn-lg" 
+                    style="font-size: 1rem; padding: 0.5rem 1rem;"
+                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline">Salir</span>
-                    </button>
+                    </a>
+
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+
+                    </form>
                 @endauth
             </div>
         </div>

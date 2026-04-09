@@ -12,9 +12,30 @@
     --color-view-hover: #2c80b4;
     --color-view-active: #21618c;
 
-    --color-edit: #f1c40f;
-    --color-edit-hover: #d4ac0d;
-    --color-edit-active: #b7950b;
+    --color-edit:             #ffc107; /*Amarillo estandar de Boostrap*/
+    --color-edit-hover:       #e0a800;
+    --color-edit-active:      #c69500;
+
+    /*2 --color-edit:           #f1c40f; Ámbar/Naranja Suave
+        --color-edit-hover:     #d68910;
+        --color-edit-active:    #b9770e;
+    */
+
+    /*3 --color-edit:           #f1c40f; Amarillo claro
+        --color-edit-hover:     #d4ac0d;
+        --color-edit-active:    #b8960b;   
+    */
+    
+    /*4 --color-edit:           #e67e22; Mostaza 
+        --color-edit-hover:     #d35400;
+        --color-edit-active:    #ba4a00;
+    */
+
+    /*5 --color-edit:           #d4af37;
+        --color-edit-hover:     #c09c2e;
+        --color-edit-active:    #a88726;
+    */ 
+    
 
     --color-danger: #e60023;
     --color-danger-hover: #b8001c;
@@ -91,7 +112,7 @@ html, body {
 
 /* ══════════════════════ NAVBAR ══════════════════════ */
 .navbar {
-    background-color: #DA0000 !important;
+    background-color: /*#e10734*/ var(--mg-black) !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -496,11 +517,31 @@ body.dark-mode .table-hover > tbody > tr:not(.row-consumida):not(.row-incidencia
     font-size: 1.2rem;
 }
 
-/* TABLE */
+/* TABLE HEADERS - Color #e10734 */
 .table thead {
-    background-color: var(--mg-navy);
-    color: #fff;
+    background-color: #e10734 !important;
+    color: #fff !important;
 }
+
+/* Override inline styles like background:#0f2130 en dashboard tables */
+table thead[style*="background:#0f2130"],
+table thead[style*="background: #0f2130"] {
+    background-color: #e10734 !important;
+    color: #fff !important;
+}
+
+/* Admin users table-dark-header */
+.table-dark-header thead {
+    background-color: #e10734 !important;
+    color: #fff !important;
+}
+
+/* Cards tables */
+.card .table thead {
+    background-color: #e10734 !important;
+    color: #fff !important;
+}
+
 
 /* ROW COLORS */
 .table > tbody > tr.row-consumida > td { background-color: var(--row-consumida) !important; }
@@ -641,4 +682,20 @@ body.dark-mode .table-index-cisternas.table-hover > tbody > tr:hover > * {
     font-weight: 600;
     padding: 0.5rem 0;
     color: var(--color-text);
+}
+
+/* Dashboard button*/
+.btn-dashboard {
+    border-color: #8e44ad;
+    color: #8e44ad;
+}
+.btn-dashboard:hover {
+    background-color: #71368a;
+    border-color: #71368a;
+    color: #ffffff;
+}
+.btn-dashboard:active {
+    background-color: #5b2b6e !important;
+    border-color: #5b2b6e !important;
+    color: #ffffff !important;
 }

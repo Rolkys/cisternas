@@ -10,6 +10,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Modelo Cisterna: gestion datos cisternas transporte (fillable/casts).
+ */
 class Cisterna extends Model
 {
     protected $primaryKey = 'IdCisterna';

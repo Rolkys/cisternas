@@ -15,6 +15,9 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
+/**
+ * Servicio export cisternas a Excel con colores/estilos.
+ */
 class ExcelExportService
 {
 

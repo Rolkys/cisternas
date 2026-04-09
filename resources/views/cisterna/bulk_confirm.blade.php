@@ -272,12 +272,20 @@ $esMoratalla = strpos(strtolower($destinoTexto), 'moratalla') !== false;
 @endif
 
 <script>
+/**
+ * Toggle todos checkboxes filas bulk import.
+ * @param {bool} checked Estado true/false
+ */
 function toggleTodos(checked) {
     document.querySelectorAll('.check-fila').forEach((checkbox) => {
         checkbox.checked = !!checked;
     });
 }
 
+/**
+ * Recoge datos edits de filas bulk en objeto JSON.
+ * @return {object} rows[index][field]=value
+ */
 function collectRowsData() {
     const rows = {};
     const fields = document.querySelectorAll('#bulk-edit-form input[name^="filas["], #bulk-edit-form textarea[name^="filas["], #bulk-edit-form select[name^="filas["]');
@@ -301,6 +309,9 @@ function collectRowsData() {
     return rows;
 }
 
+/**
+ * Submite form import ALL rows from Excel preview.
+ */
 function submitImportAll() {
     const hidden = document.getElementById('edited_rows_json_all');
     hidden.value = JSON.stringify(collectRowsData());
