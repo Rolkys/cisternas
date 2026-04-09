@@ -28,9 +28,8 @@
             </div>
         </div>
 
-        <div class="mb-3 form-check">
-            <input type="checkbox" name="remember" class="form-check-input" id="remember">
-            <label class="form-check-label" for="remember">Recordarme</label>
+        <div class="mb-3 text-center">
+            <button type="button" class="btn btn-link p-0" onclick="alert('Por favor, hable con un encargado para restablecer su contraseña.');">He olvidado mi contraseña</button>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Entrar</button>

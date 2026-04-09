@@ -206,7 +206,6 @@ $data = $request->all();
 
             if ($request->has('HoraRealConsumoL2') && $request->HoraRealConsumoL2) {
                 $cisterna->HoraRealConsumoL2 = Carbon::parse($base . ' ' . $request->HoraRealConsumoL2 . ':00')->format('Y-m-d H:i:s');
-            }
 
             if ($request->has('Observaciones')) {
                 $cisterna->Observaciones = $request->Observaciones;
@@ -220,7 +219,7 @@ $data = $request->all();
         
         abort(403, 'No tienes permisos para editar');
     }
-
+}
 /**
  * Elimina cisterna (solo admin/root).
  * @param Cisterna $cisterna Modelo
