@@ -4,16 +4,16 @@ use Illuminate\Support\Str;
 
 return [
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Default Cache Store
+    | Almacén de Caché Predeterminado
     |--------------------------------------------------------------------------
     |
-    | This option controls the default cache store that will be used by the
-    | framework. This connection is utilized if another isn't explicitly
-    | specified when running a cache operation inside the application.
+    | Esta opción controla el almacén de caché predeterminado que será usado por el
+    | framework. Esta conexión se utiliza si no se especifica otra explícitamente
+    | al ejecutar una operación de caché dentro de la aplicación.
     |
-    */
+    */ 
 
     'default' => env('CACHE_STORE', 'database'),
 
@@ -101,16 +101,16 @@ return [
 
     ],
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Cache Key Prefix
+    | Prefijo de Clave de Caché
     |--------------------------------------------------------------------------
     |
-    | When utilizing the APC, database, memcached, Redis, and DynamoDB cache
-    | stores, there might be other applications using the same cache. For
-    | that reason, you may prefix every cache key to avoid collisions.
+    | Al utilizar los almacenes de caché APC, base de datos, memcached, Redis y DynamoDB
+    | puede haber otras aplicaciones usando el mismo caché. Por
+    | esa razón, puedes prefijar cada clave de caché para evitar colisiones.
     |
-    */
+    */ 
 
     'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
 

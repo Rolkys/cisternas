@@ -4,31 +4,30 @@ use Illuminate\Support\Str;
 
 return [
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Default Session Driver
+    | Controlador de Sesión Predeterminado
     |--------------------------------------------------------------------------
     |
-    | This option determines the default session driver that is utilized for
-    | incoming requests. Laravel supports a variety of storage options to
-    | persist session data. Database storage is a great default choice.
+    | Esta opción determina el controlador de sesión predeterminado que se utiliza para
+    | las solicitudes entrantes. Laravel soporta una variedad de opciones de almacenamiento para
+    | persistir datos de sesión. El almacenamiento en base de datos es una gran opción predeterminada.
     |
-    | Supported: "file", "cookie", "database", "memcached",
+    | Soportado: "file", "cookie", "database", "memcached",
     |            "redis", "dynamodb", "array"
     |
     */
 
     'driver' => env('SESSION_DRIVER', 'database'),
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Session Lifetime
+    | Duración de la Sesión
     |--------------------------------------------------------------------------
     |
-    | Here you may specify the number of minutes that you wish the session
-    | to be allowed to remain idle before it expires. If you want them
-    | to expire immediately when the browser is closed then you may
-    | indicate that via the expire_on_close configuration option.
+    | Aquí puedes especificar el número de minutos que deseas que la sesión
+    | pueda permanecer inactiva antes de que expire. Si quieres que expiren inmediatamente
+    | cuando el navegador se cierre, puedes indicarlo mediante la opción de configuración expire_on_close.
     |
     */
 
@@ -36,81 +35,81 @@ return [
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Session Encryption
+    | Cifrado de Sesión
     |--------------------------------------------------------------------------
     |
-    | This option allows you to easily specify that all of your session data
-    | should be encrypted before it's stored. All encryption is performed
-    | automatically by Laravel and you may use the session like normal.
+    | Esta opción te permite especificar fácilmente que todos tus datos de sesión
+    | deben cifrarse antes de almacenarse. Todo el cifrado se realiza
+    | automáticamente por Laravel y puedes usar la sesión como normal.
     |
     */
 
     'encrypt' => env('SESSION_ENCRYPT', false),
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Session File Location
+    | Ubicación del Archivo de Sesión
     |--------------------------------------------------------------------------
     |
-    | When utilizing the "file" session driver, the session files are placed
-    | on disk. The default storage location is defined here; however, you
-    | are free to provide another location where they should be stored.
+    | Al utilizar el controlador de sesión "file", los archivos de sesión se colocan
+    | en disco. La ubicación de almacenamiento predeterminada está definida aquí; sin embargo, eres
+    | libre de proporcionar otra ubicación donde deben almacenarse.
     |
     */
 
     'files' => storage_path('framework/sessions'),
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Session Database Connection
+    | Conexión de Base de Datos de Sesión
     |--------------------------------------------------------------------------
     |
-    | When using the "database" or "redis" session drivers, you may specify a
-    | connection that should be used to manage these sessions. This should
-    | correspond to a connection in your database configuration options.
+    | Al usar los controladores de sesión "database" o "redis", puedes especificar una
+    | conexión que debe usarse para gestionar estas sesiones. Esto debe
+    | corresponder a una conexión en tus opciones de configuración de base de datos.
     |
     */
 
     'connection' => env('SESSION_CONNECTION'),
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Session Database Table
+    | Tabla de Base de Datos de Sesión
     |--------------------------------------------------------------------------
     |
-    | When using the "database" session driver, you may specify the table to
-    | be used to store sessions. Of course, a sensible default is defined
-    | for you; however, you're welcome to change this to another table.
+    | Al usar el controlador de sesión "database", puedes especificar la tabla a
+    | utilizar para almacenar las sesiones. Por supuesto, se define un predeterminado sensato
+    | para ti; sin embargo, puedes cambiarlo por otra tabla.
     |
     */
 
     'table' => env('SESSION_TABLE', 'sessions'),
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Session Cache Store
+    | Almacén de Caché de Sesión
     |--------------------------------------------------------------------------
     |
-    | When using one of the framework's cache driven session backends, you may
-    | define the cache store which should be used to store the session data
-    | between requests. This must match one of your defined cache stores.
+    | Al usar uno de los backends de sesión impulsados por caché del framework, puedes
+    | definir el almacén de caché que debe usarse para almacenar los datos de sesión
+    | entre solicitudes. Esto debe coincidir con uno de tus almacenes de caché definidos.
     |
-    | Affects: "dynamodb", "memcached", "redis"
+    | Afecta: "dynamodb", "memcached", "redis"
     |
     */
 
     'store' => env('SESSION_STORE'),
 
-    /*
+/*
     |--------------------------------------------------------------------------
-    | Session Sweeping Lottery
+    | Lotería de Limpieza de Sesiones
     |--------------------------------------------------------------------------
     |
-    | Some session drivers must manually sweep their storage location to get
-    | rid of old sessions from storage. Here are the chances that it will
-    | happen on a given request. By default, the odds are 2 out of 100.
+    | Algunos controladores de sesión deben limpiar manualmente su ubicación de almacenamiento para eliminar
+    | sesiones antiguas del almacenamiento. Aquí están las probabilidades de que ocurra
+    | en una solicitud dada. Por defecto, las probabilidades son 2 de 100.
     |
     */
 
