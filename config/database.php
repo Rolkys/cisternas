@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlsrv'),
+    'default' => env('DB_CONNECTION', 'dblib'),
 
 /*
     |--------------------------------------------------------------------------
@@ -35,23 +35,23 @@ return [
 
     'connections' => [
 
-        'sqlsrv' => [
-                'driver' => 'sqlsrv',
-                'url' => env('DATABASE_URL'),
-                'host' => env('DB_HOST', '192.168.1.253'),
-                'port' => env('DB_PORT', '49165'),
-                'database' => env('DB_DATABASE', 'CISTERNAS'),
-                'username' => env('DB_USERNAME', 'cisternas'),
-                'password' => env('DB_PASSWORD', 'Cisternas2026$*'),
-                'charset' => 'utf8',
-                'prefix' => '',
-                'prefix_indexes' => true,
-                'options' => [
-                    'ConnectTimeout' => 30,
-                ],
-            ],
-
+    'dblib' => [
+            'driver'   => 'sqlsrv',
+            'url'      => env('DATABASE_URL'),
+            'host'     => env('DB_HOST', '192.168.1.253'),
+            'port'     => env('DB_PORT', '49165'),
+            'database' => env('DB_DATABASE', 'CISTERNAS'),
+            'username' => env('DB_USERNAME', 'cisternas'),
+            'password' => env('DB_PASSWORD', 'Cisternas2026$*'),
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'prefix_indexes' => true,
+            'options'  => [
+                'ConnectTimeout' => 30,
+        ],
     ],
+
+],
 
 /*
     |--------------------------------------------------------------------------
