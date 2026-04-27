@@ -711,6 +711,13 @@ body.dark-mode .table-index-cisternas.table-hover > tbody > tr:hover > * {
     color: var(--color-text);
 }
 
+/* Grid buttons - used in index page button grid */
+.btn-grid {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
 /* Dashboard button*/
 .btn-dashboard {
     border-color: #8e44ad;

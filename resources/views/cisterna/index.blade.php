@@ -23,28 +23,27 @@
         {{-- Grid de botones con columnas de ancho fijo --}}
         <div class="d-grid gap-2" style="grid-template-columns: repeat(3, 1fr); max-width: 700px;">
             @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
-                <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-success w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                <a href="{{ route('cisterna.bulk') }}" class="btn btn-outline-success w-100 btn-grid">
                     <i class="bi bi-box-arrow-down-left"></i>
                     <span class="d-none d-md-inline ms-1">Importar Excel</span>
                 </a>
             @endif
             @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
-                <a href="{{ route('cisterna.create') }}" class="btn btn-outline-success w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                <a href="{{ route('cisterna.create') }}" class="btn btn-outline-warning w-100 btn-grid">
                     <i class="bi bi-plus-lg"></i>
                     <span class="d-none d-md-inline ms-1">Cisterna Comprada</span>
                 </a>
             @endif
-            <a href="{{ route('cisterna.export', request()->query()) }}" class="btn btn-outline-primary w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+            <a href="{{ route('cisterna.export', request()->query()) }}" class="btn btn-outline-primary w-100 btn-grid">
                 <i class="bi bi-box-arrow-up-right"></i>
                 <span class="d-none d-md-inline ms-1">Exportar Excel</span>
             </a>
             <a href="{{ route('dashboard') }}" 
-                class="btn btn-dashboard w-100" 
-                style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                class="btn btn-dashboard w-100 btn-grid">
                     <i class="bi bi-speedometer2"></i>
                     <span class="d-none d-md-inline ms-1">Dashboard</span>
             </a>
-            <a href="{{ route('planificacion.index') }}" class="btn btn-outline-info w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+            <a href="{{ route('planificacion.index') }}" class="btn btn-outline-info w-100 btn-grid">
                 <i class="bi bi-calendar2-week"></i>
                 <span class="d-none d-md-inline ms-1">Planificación</span>
             </a>
