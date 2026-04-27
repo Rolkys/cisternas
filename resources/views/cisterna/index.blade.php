@@ -29,9 +29,9 @@
                 </a>
             @endif
             @if(auth()->user()->isRoot() || auth()->user()->isAdmin() || auth()->user()->isUser())
-                <a href="{{ route('cisterna.create') }}" class="btn btn-primary w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
+                <a href="{{ route('cisterna.create') }}" class="btn btn-outline-success w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
                     <i class="bi bi-plus-lg"></i>
-                    <span class="d-none d-md-inline ms-1">Nueva Cisterna</span>
+                    <span class="d-none d-md-inline ms-1">Cisterna Comprada</span>
                 </a>
             @endif
             <a href="{{ route('cisterna.export', request()->query()) }}" class="btn btn-outline-primary w-100" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; white-space: nowrap;">
