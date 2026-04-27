@@ -58,5 +58,13 @@ class Cisterna extends Model
         'GlobalGAP'                 => 'boolean',
         'FDA'                       => 'boolean',
     ];
+
+    protected $dateFormat = 'Ymd H:i:s';
+
+    public function freshTimestamp()
+    {
+        return now()->format('Ymd H:i:s');
+    }
 }
+
 

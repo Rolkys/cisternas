@@ -92,4 +92,11 @@ class User extends Authenticatable
     {
         return $this->isAdmin() || $this->isRoot();
     }
+
+    protected $dateFormat = 'Ymd H:i:s';
+
+    public function freshTimestamp()
+    {
+        return now()->format('Ymd H:i:s');
+    }
 }

@@ -10,18 +10,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Cisterna;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CisternaController extends Controller
 /**
  * CRUD + bulk operations for cisternas management dashboard.
  */
+class CisternaController extends Controller
 {
 /**
  * Muestra lista de cisternas con filtros por año, texto y fecha.
  * @param Request $request Filtros GET
- * @return View Lista paginada
+ * @return View Vista lista paginada
  */
 public function index(Request $request)
     {
@@ -153,14 +154,14 @@ public function edit(Cisterna $cisterna)
  * Actualiza cisterna (admin/user/root) or consumo (operario).
  * @param Request $request Datos update
  * @param Cisterna $cisterna Modelo
- * @return Redirect index + msg
+ * @return \Illuminate\Http\RedirectResponse
  */
 public function update(Request $request, Cisterna $cisterna)
     {
         $user = Auth::user();
 
         if ($user->isRoot() || $user->isAdmin() || $user->isUser()) {
-$request->validate([
+            $request->validate([
                 'OF'             => 'required|integer',
                 'NumeroCisterna' => 'required|integer',
                 'Conductor'      => 'required|string|max:255',
@@ -177,7 +178,7 @@ $request->validate([
                 'FDA'            => 'nullable|boolean',
             ]);
 
-$data = $request->all();
+            $data = $request->all();
             // OF and NumeroCisterna from form directly
             $data = $this->syncFechasConsumoEntrada($data);
             $data = $this->autoConsumir($data, $cisterna);
@@ -201,11 +202,12 @@ $data = $request->all();
                     : Carbon::now()->format('Y-m-d'));
 
             if ($request->has('HoraRealConsumoL1') && $request->HoraRealConsumoL1) {
-                $cisterna->HoraRealConsumoL1 = Carbon::parse($base . ' ' . $request->HoraRealConsumoL1 . ':00')->format('Y-m-d H:i:s');
+                $cisterna->HoraRealConsumoL1 = Carbon::parse($base . ' ' . $request->HoraRealConsumoL1 . ':00')->format('Ymd H:i:s');
             }
 
             if ($request->has('HoraRealConsumoL2') && $request->HoraRealConsumoL2) {
-                $cisterna->HoraRealConsumoL2 = Carbon::parse($base . ' ' . $request->HoraRealConsumoL2 . ':00')->format('Y-m-d H:i:s');
+                $cisterna->HoraRealConsumoL2 = Carbon::parse($base . ' ' . $request->HoraRealConsumoL2 . ':00')->format('Ymd H:i:s');
+            }
 
             if ($request->has('Observaciones')) {
                 $cisterna->Observaciones = $request->Observaciones;
@@ -219,7 +221,7 @@ $data = $request->all();
         
         abort(403, 'No tienes permisos para editar');
     }
-}
+
 /**
  * Elimina cisterna (solo admin/root).
  * @param Cisterna $cisterna Modelo
@@ -268,11 +270,11 @@ public function updateConsumo(Request $request, Cisterna $cisterna)
                 : Carbon::now()->format('Y-m-d'));
 
         $cisterna->HoraRealConsumoL1 = $request->HoraRealConsumoL1
-            ? Carbon::parse($base . ' ' . $request->HoraRealConsumoL1 . ':00')->format('Y-m-d H:i:s')
+            ? Carbon::parse($base . ' ' . $request->HoraRealConsumoL1 . ':00')->format('Ymd H:i:s')
             : null;
 
         $cisterna->HoraRealConsumoL2 = $request->HoraRealConsumoL2
-            ? Carbon::parse($base . ' ' . $request->HoraRealConsumoL2 . ':00')->format('Y-m-d H:i:s')
+            ? Carbon::parse($base . ' ' . $request->HoraRealConsumoL2 . ':00')->format('Ymd H:i:s')
             : null;
 
         $cisterna->Observaciones = $request->Observaciones ?? $cisterna->Observaciones;
@@ -331,7 +333,7 @@ public function bulkStore(Request $request)
 
 /**
  * Vista confirm preview bulk Excel (admin/root).
- * @return View bulk_confirm or redirect error
+ * @return View|\Illuminate\Http\RedirectResponse Vista confirm o redirect error
  */
 public function bulkConfirm()
     {
@@ -421,7 +423,7 @@ public function bulkConfirmStore(Request $request)
                 }
 
                 $data = $this->syncFechasConsumoEntrada($data);
-                foreach (['FechaFabricacionHuelva', 'HoraLlegadaEstimada', 'HoraEstimadaConsumoL1', 'HoraEstimadaConsumoL2', 'FechaConsumoMG', 'FechaEntradaMG'] as $campo) {
+                foreach (['FechaFabricacionHuelva', 'HoraLlegadaEstimada', 'HoraEstimadaConsumoL1', 'HoraEstimadaConsumoL2'] as $campo) {
                     if (empty($data[$campo]) || $data[$campo] === '') {
                         $data[$campo] = null;
                     }
@@ -481,7 +483,7 @@ public function bulkConfirmStore(Request $request)
             }
 
             $data = $this->syncFechasConsumoEntrada($data);
-            foreach (['FechaFabricacionHuelva', 'HoraLlegadaEstimada', 'HoraEstimadaConsumoL1', 'HoraEstimadaConsumoL2', 'FechaConsumoMG', 'FechaEntradaMG'] as $campo) {
+            foreach (['FechaFabricacionHuelva', 'HoraLlegadaEstimada', 'HoraEstimadaConsumoL1', 'HoraEstimadaConsumoL2'] as $campo) {
                 if (empty($data[$campo]) || $data[$campo] === '') {
                     $data[$campo] = null;
                 }
@@ -613,8 +615,8 @@ public function dashboard(Request $request)
                                     ->get();
 
         $años = Cisterna::selectRaw('YEAR(COALESCE(FechaConsumoMG, created_at)) as ano')
-                        ->groupBy('ano')
-                        ->orderByDesc('ano')
+                        ->groupByRaw('YEAR(COALESCE(FechaConsumoMG, created_at))')
+                        ->orderByRaw('YEAR(COALESCE(FechaConsumoMG, created_at)) DESC')
                         ->pluck('ano');
 
         $añoSeleccionado = $request->año;
@@ -659,8 +661,16 @@ private function autoConsumir(array $data, ?Cisterna $cisterna = null): array
 private function syncFechasConsumoEntrada(array $data): array
     {
         $fechaConsumo = $data['FechaConsumoMG'] ?? null;
-        $data['FechaEntradaMG'] = $fechaConsumo ?: null;
+        
+        if($fechaConsumo && $fechaConsumo !== ''){
+            $fechaConsumo = Carbon::parse($fechaConsumo)->format('Ymd H:i:s');
+        }else {
+            $fechaConsumo = null;
+        }
 
+        $data['FechaConsumoMG'] = $fechaConsumo;
+        $data['FechaEntradaMG'] = $fechaConsumo;
+        
         return $data;
     }
 

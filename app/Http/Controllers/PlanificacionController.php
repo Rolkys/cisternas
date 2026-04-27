@@ -83,7 +83,7 @@ class PlanificacionController extends Controller
         $this->guardar($filas);
 
         return redirect()->route('planificacion.index')
-                         ->with('success', 'âœ… Fila aÃ±adida.');
+                         ->with('success', '✅ Fila añadida.');
     }
 
     // ==================== EDIT ====================
@@ -135,7 +135,7 @@ class PlanificacionController extends Controller
         $this->guardar($filas);
 
         return redirect()->route('planificacion.index')
-                         ->with('success', 'âœ… Fila actualizada.');
+                         ->with('success', '✅ Fila actualizada.');
     }
 
     // ==================== DESTROY ====================
@@ -151,7 +151,7 @@ class PlanificacionController extends Controller
         }));
         $this->guardar($filas);
         return redirect()->route('planificacion.index')
-                         ->with('success', 'âœ… Fila eliminada.');
+                         ->with('success', '✅ Fila eliminada.');
     }
 
     // ==================== LIMPIAR TODO ====================
@@ -163,7 +163,7 @@ class PlanificacionController extends Controller
         $this->soloAdmin();
         $this->guardar([]);
         return redirect()->route('planificacion.index')
-                         ->with('success', 'âœ… PlanificaciÃ³n limpiada.');
+                         ->with('success', '✅ Planificación limpiada.');
     }
 
     // ==================== EXPORTAR ====================
@@ -176,14 +176,14 @@ class PlanificacionController extends Controller
 
         if (empty($filas)) {
             return redirect()->route('planificacion.index')
-                             ->with('error', 'âŒ No hay filas para exportar.');
+                             ->with('error', '❌ No hay filas para exportar.');
         }
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet       = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('PlanificaciÃ³n');
+        $sheet->setTitle('Planificación');
 
-        $sheet->setCellValue('A1', 'NÂº Cisterna');
+        $sheet->setCellValue('A1', 'Nº Cisterna');
         $sheet->setCellValue('B1', 'Destino');
         $sheet->setCellValue('C1', 'Fecha Consumo');
         $sheet->setCellValue('D1', 'Fecha Fab. Huelva');
@@ -232,7 +232,7 @@ class PlanificacionController extends Controller
     private function soloAdmin()
     {
         if (!auth()->user()->isAdmin()) {
-            abort(403, 'Solo administradores pueden modificar la planificaciÃ³n.');
+            abort(403, 'Solo administradores pueden modificar la planificación.');
         }
     }
 }

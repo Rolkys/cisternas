@@ -189,15 +189,15 @@ class ExcelImportService
 
         if (is_numeric($value)) {
             $dt = Date::excelToDateTimeObject((float) $value);
-            return $dt->format('Y-m-d H:i:s');
+            return $dt->format('Ymd H:i:s');
         }
 
         if ($value instanceof \DateTime) {
-            return $value->format('Y-m-d H:i:s');
+            return $value->format('Ymd H:i:s');
         }
 
         try {
-            return (new \DateTime((string) $value))->format('Y-m-d H:i:s');
+            return (new \DateTime((string) $value))->format('Ymd H:i:s');
         } catch (\Exception $e) {
             return null;
         }
@@ -231,7 +231,7 @@ class ExcelImportService
             }
         }
 
-        return $date->format('Y-m-d H:i:s');
+        return $date->format('Ymd H:i:s');
     }
 }
 

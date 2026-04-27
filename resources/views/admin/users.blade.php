@@ -1,13 +1,13 @@
-{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicación. --}}
 @extends('layouts.app')
 
 @section('content')
 <div class="sub-topbar mb-3">
-    <strong>Gestion de Usuarios</strong>
+    <strong>Gestión de Usuarios</strong>
 </div>
 
 <div class="mb-3">
-    <a class="btn btn-primary" href="{{ route('admin.users.create') }}">Crear usuario</a>
+    <a class="btn btn-primary" href="{{ route('admin.users.create') }}">Crear Usuario</a>
 </div>
 
 @if(session('success'))

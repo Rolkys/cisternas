@@ -3,7 +3,7 @@
 /**
  * DOC: Proyecto Cisternas
  * Archivo personalizado del dominio de negocio.
- * Contiene lÃ³gica especÃ­fica de gestiÃ³n de cisternas/usuarios/planificaciÃ³n.
+ * Contiene lógica específica de gestión de cisternas/usuarios/planificación.
  */
 
 namespace App\Http\Controllers;
@@ -50,7 +50,7 @@ class AdminController extends Controller
         $plainPassword = $this->generatePasswordFromEmail($validated['email']);
         if ($validated['password_generada'] !== $plainPassword) {
             return back()
-                ->withErrors(['password_generada' => 'Debes generar la contraseÃ±a con el botÃ³n antes de crear.'])
+                ->withErrors(['password_generada' => 'Debes generar la contraseña con el botón antes de crear.'])
                 ->withInput();
         }
 
@@ -60,7 +60,7 @@ class AdminController extends Controller
             'password' => Hash::make($plainPassword),
             'role' => $validated['role'],
             'is_active' => true,
-            'fecha_registro' => now(),
+            'fecha_registro' => now()->format('Ymd H:i:s'),
         ]);
 
         Log::info('Usuario creado por administrador', [
@@ -70,7 +70,7 @@ class AdminController extends Controller
 
         return redirect()->route('admin.users')->with(
             'success',
-            "Usuario creado correctamente.<br>ContraseÃ±a generada: <b>{$plainPassword}</b>"
+            "Usuario creado correctamente.<br>Contraseña generada: <b>{$plainPassword}</b>"
         );
     }
 
@@ -166,13 +166,13 @@ class AdminController extends Controller
     }
 
     /**
-     * Genera una contraseÃ±a determinÃ­stica a partir del email.
+     * Genera una contraseña determinística a partir del email.
      */
     private function generatePasswordFromEmail(string $email): string
     {
         $localPart = trim(explode('@', $email)[0] ?? '');
         if ($localPart === '') {
-            throw new \InvalidArgumentException('El email no tiene parte local vÃ¡lida.');
+            throw new \InvalidArgumentException('El email no tiene parte local válida.');
         }
 
         $upperLocal = strtoupper($localPart);

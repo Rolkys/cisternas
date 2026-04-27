@@ -1,5 +1,5 @@
 
-{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicacion. --}}
+{{-- DOC: Proyecto Cisternas | Vista personalizada de la aplicación. --}}
 @extends('layouts.app')
 
 @section('content')
